@@ -2,14 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SelectBudgetOptions, SelectTravelList } from "@/constants/options";
 import { useState } from "react";
-import {
-  FaPlaneDeparture,
-  FaCalendarAlt,
-  FaUsers,
-} from "react-icons/fa";
-import {
-  FaMoneyBills,
-} from "react-icons/fa6";
+import { FaPlaneDeparture, FaCalendarAlt, FaUsers } from "react-icons/fa";
+import { FaMoneyBills } from "react-icons/fa6";
 
 function CreateTrip() {
   const [destination, setDestination] = useState("");
@@ -31,8 +25,8 @@ function CreateTrip() {
         {/* Destination */}
         <div>
           <h2 className="text-xl my-3 font-medium text-primary flex items-center gap-2">
-            <FaPlaneDeparture className="text-2xl mr-1 text-black" /> Where do you
-            want to go?
+            <FaPlaneDeparture className="text-2xl mr-1 text-black" /> Where do
+            you want to go?
           </h2>
           <Input
             placeholder="Type your destination (e.g., Paris, Tokyo)"
@@ -45,8 +39,8 @@ function CreateTrip() {
         {/* Trip Duration */}
         <div>
           <h2 className="text-xl my-3 font-medium text-primary flex items-center gap-2">
-            <FaCalendarAlt className="text-2xl mr-1 text-black" /> How long will you
-            stay?
+            <FaCalendarAlt className="text-2xl mr-1 text-black" /> How long will
+            you stay?
           </h2>
           <Input
             placeholder="Enter the number of days (e.g., 5)"
@@ -60,10 +54,10 @@ function CreateTrip() {
         {/* Budget Selection */}
         <div>
           <h2 className="text-xl my-3 font-medium text-primary flex items-center gap-2">
-            <FaMoneyBills className="text-2xl mr-1 text-black"/>
-              What’s your budget range?
+            <FaMoneyBills className="text-2xl mr-1 text-black" />
+            What’s your budget range?
           </h2>
-          <div className="grid grid-cols-3 gap-5 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
             {SelectBudgetOptions.map((item, index) => (
               <div
                 key={index}
@@ -83,9 +77,10 @@ function CreateTrip() {
         {/* Travel Partner */}
         <div>
           <h2 className="text-xl my-3 font-medium text-primary flex items-center gap-2">
-            <FaUsers className="text-2xl mr-1 text-black" /> Who’s coming with you?
+            <FaUsers className="text-2xl mr-1 text-black" /> Who’s coming with
+            you?
           </h2>
-          <div className="grid grid-cols-3 gap-5 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
             {SelectTravelList.map((item, index) => (
               <div
                 key={index}
