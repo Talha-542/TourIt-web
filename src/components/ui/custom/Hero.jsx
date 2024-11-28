@@ -18,7 +18,7 @@ function Hero() {
         to seamless adventures.
       </p>
       <Link to={"/create-trip"}>
-        <Button >Plan Your Perfect Trip – Free & Easy</Button>
+        <Button size="lg">Plan Your Perfect Trip – Free & Easy 📅</Button>
       </Link>
     </div>
   );
