@@ -1,15 +1,45 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SelectBudgetOptions, SelectTravelList } from "@/constants/options";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { FaPlaneDeparture, FaCalendarAlt, FaUsers } from "react-icons/fa";
 import { FaMoneyBills } from "react-icons/fa6";
 
 function CreateTrip() {
-  const [destination, setDestination] = useState("");
-  const [tripDays, setTripDays] = useState("");
-  const [budget, setBudget] = useState(null);
-  const [partner, setPartner] = useState(null);
+  // const [destination, setDestination] = useState("");
+  // const [tripDays, setTripDays] = useState("");
+  // const [budget, setBudget] = useState(null);
+  // const [partner, setPartner] = useState(null);
+  const [formData, setFormData] = useState([]);
+  const [place, setPlace] = useState("");
+
+  const handleTnputChange = (name, value) => {
+    if (name === "No of days" && value > 5) {
+      console.log("Please Enter less then 5 days");
+      return;
+    }
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
+
+  const OngenerateTrip = () => {
+    console.log("Button clicked, OngenerateTrip called"); // Debug log
+
+    if (formData?.NoOfDays > 5) {
+      alert("Please enter a duration of 5 days or less.");
+      return;
+    }
+
+    console.log("Trip Generated:", formData); // Debug log
+    alert("Your trip has been successfully generated!");
+  };
 
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
@@ -28,11 +58,15 @@ function CreateTrip() {
             <FaPlaneDeparture className="text-2xl mr-1 text-black" /> Where do
             you want to go?
           </h2>
-          <Input
-            placeholder="Type your destination (e.g., Paris, Tokyo)"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            className="w-full"
+          <GooglePlacesAutocomplete
+            apiKey={import.meta.env.VITE_GOOGLE_PLACE_API_KEY}
+            selectProps={{
+              place,
+              onChange: (v) => {
+                setPlace(v);
+                handleTnputChange("location", v);
+              },
+            }}
           />
         </div>
 
@@ -45,8 +79,7 @@ function CreateTrip() {
           <Input
             placeholder="Enter the number of days (e.g., 5)"
             type="number"
-            value={tripDays}
-            onChange={(e) => setTripDays(e.target.value)}
+            onChange={(e) => handleTnputChange("NoOfDays", e.target.value)}
             className="w-full"
           />
         </div>
@@ -61,10 +94,10 @@ function CreateTrip() {
             {SelectBudgetOptions.map((item, index) => (
               <div
                 key={index}
+                onClickCapture={() => handleTnputChange("budget", item.title)}
                 className={`p-4 rounded-lg border cursor-pointer hover:shadow-lg ${
-                  budget === item.title ? "border-accent bg-accent-light" : ""
+                  formData?.budget === item.title && "shadow-lg border-black"
                 }`}
-                onClick={() => setBudget(item.title)}
               >
                 <h2 className="text-4xl">{item.icon}</h2>
                 <h2 className="font-bold text-lg mt-2">{item.title}</h2>
@@ -84,10 +117,12 @@ function CreateTrip() {
             {SelectTravelList.map((item, index) => (
               <div
                 key={index}
+                onClickCapture={() =>
+                  handleTnputChange("traveler", item.people)
+                }
                 className={`p-4 rounded-lg border cursor-pointer hover:shadow-lg ${
-                  partner === item.title ? "border-accent bg-accent-light" : ""
+                  formData?.traveler === item.people && "shadow-lg border-black"
                 }`}
-                onClick={() => setPartner(item.title)}
               >
                 <h2 className="text-4xl">{item.icon}</h2>
                 <h2 className="font-bold text-lg mt-2">{item.title}</h2>
@@ -99,13 +134,7 @@ function CreateTrip() {
 
         {/* Generate Trip */}
         <div className="flex justify-end my-10">
-          <Button
-            onClick={() =>
-              console.log({ destination, tripDays, budget, partner })
-            }
-          >
-            Generate My Trip 🎉
-          </Button>
+          <Button onClick={OngenerateTrip}>Generate My Trip 🎉</Button>
         </div>
       </div>
     </div>
