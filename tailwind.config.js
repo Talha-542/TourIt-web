@@ -6,6 +6,9 @@ export default {
 		"./src/**/*.{js,ts,jsx,tsx}",
 	  ],  theme: {
   	extend: {
+		backgroundImage: {
+			'hero-pattern': "url('/home-mix.jpg')", // Add your image here
+		  },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -55,6 +58,8 @@ export default {
   		}
   	}
   },
+
+  
 //   plugins: [require("tailwindcss-animate")],
 }
 
