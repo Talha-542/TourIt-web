@@ -193,9 +193,7 @@ function CreateTrip() {
       </p>
 
       <div className="mt-12 flex flex-col gap-12">
-        {/* Destination and Trip Duration on the same line */}
         <div className="flex flex-col sm:flex-row sm:gap-8">
-          {/* Destination */}
           <div className="flex-1">
             <h2 className="text-xl my-3 font-medium text-primary flex items-center gap-2">
               <FaPlaneDeparture className="text-2xl mr-1 text-black" /> Where do
