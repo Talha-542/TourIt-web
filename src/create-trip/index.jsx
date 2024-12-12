@@ -9,24 +9,24 @@ import { chatSession } from "@/service/AIModal";
 import { useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { FaPlaneDeparture, FaCalendarAlt, FaUsers } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
+// import { FcGoogle } from "react-icons/fc";
 
 import { FaMoneyBills } from "react-icons/fa6";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  // DialogTitle,
-  // DialogTrigger,
-} from "@/components/ui/dialog";
-import { useGoogleLogin } from "@react-oauth/google";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
+// import { useGoogleLogin } from "@react-oauth/google";
 
 function CreateTrip() {
   const [formData, setFormData] = useState([]);
   const [place, setPlace] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
+  // const [openDialog, setOpenDialog] = useState(false);
 
   const handleTnputChange = (name, value) => {
     if (name === "NoOfDays" && value > 5) {
@@ -43,24 +43,24 @@ function CreateTrip() {
     console.log(formData);
   }, [formData]);
 
-  const { login } = useGoogleLogin({
-    onSuccess: (codeResp) => {
-      console.log(codeResp);
+  // const { login } = useGoogleLogin({
+  //   onSuccess: (codeResp) => {
+  //     console.log(codeResp);
 
-    },
-    onError: (error) => {
-      console.log(error);
-      toast.error("Google login failed. Please try again.");
-    },
-  });
+  //   },
+  //   onError: (error) => {
+  //     console.log(error);
+  //     toast.error("Google login failed. Please try again.");
+  //   },
+  // });
 
   const OngenerateTrip = async () => {
-    const user = localStorage.getItem("user");
-    if (!user) {
-      setOpenDialog(true);
-      // toast.error("Please Sign in to Generate Your Trip")
-      return;
-    }
+    // const user = localStorage.getItem("user");
+    // if (!user) {
+    //   setOpenDialog(true);
+    //   // toast.error("Please Sign in to Generate Your Trip")
+    //   return;
+    // }
     if (
       (formData?.NoOfDays > 5 && !formData?.location) ||
       !formData?.budget ||
@@ -205,7 +205,8 @@ function CreateTrip() {
         <div className="flex justify-end my-10">
           <Button onClick={OngenerateTrip}>Generate My Trip 🎉</Button>
         </div>
-        <Dialog open={openDialog}>
+        {/* <Dialog open={openDialog}>
+          <DialogTitle>Sign In to Our App </DialogTitle>
           <DialogContent>
             <DialogHeader>
               <DialogDescription>
@@ -217,7 +218,7 @@ function CreateTrip() {
               </DialogDescription>
             </DialogHeader>
           </DialogContent>
-        </Dialog>
+          </Dialog> */}
       </div>
     </div>
   );
