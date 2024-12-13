@@ -9,6 +9,9 @@ import { chatSession } from "@/service/AIModal";
 import { useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { FaPlaneDeparture, FaCalendarAlt, FaUsers } from "react-icons/fa";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { db } from "@/service/firebaseConfig";
+import { setDoc, doc } from "firebase/firestore";
 import { FcGoogle } from "react-icons/fc";
 import { FaMoneyBills } from "react-icons/fa6";
 import { toast } from "sonner";
@@ -27,6 +30,7 @@ function CreateTrip() {
   const [formData, setFormData] = useState([]);
   const [place, setPlace] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleTnputChange = (name, value) => {
     if (name === "NoOfDays" && value > 5) {
@@ -53,7 +57,6 @@ function CreateTrip() {
     },
   });
 
-
   const OngenerateTrip = async () => {
     const user = localStorage.getItem("user");
     if (!user) {
@@ -71,6 +74,7 @@ function CreateTrip() {
 
       return;
     }
+    setLoading(true);
 
     const FINAL_PROMPT = AI_PROMPT.replace(
       "{location}",
@@ -81,9 +85,11 @@ function CreateTrip() {
       .replace("{budget}", formData?.budget)
       .replace("{totalDays}", formData?.NoOfDays);
 
-    console.log(FINAL_PROMPT);
+    // console.log(FINAL_PROMPT);
     const result = await chatSession.sendMessage(FINAL_PROMPT);
-    console.log("-->" ,result?.response?.text());
+    console.log("-->", result?.response?.text());
+    setLoading(false);
+    saveTrips(result?.response?.text());
 
     console.log("Trip Generated:", formData);
     toast.success("Your trip has been successfully generated!");
@@ -102,11 +108,8 @@ function CreateTrip() {
       )
       .then((resp) => {
         console.log(resp);
-        // Save user data to localStorage
-        localStorage.setItem('user', JSON.stringify(resp.data));
-        // Close the dialog
+        localStorage.setItem("user", JSON.stringify(resp.data));
         setOpenDialog(false);
-        // Trigger trip generation
         OngenerateTrip();
       })
       .catch((error) => {
@@ -114,6 +117,18 @@ function CreateTrip() {
       });
   };
 
+  const saveTrips = async (TripData) => {
+    setLoading(true);
+    const user = JSON.parse(localStorage.getItem("user"));
+    const docId = Date.now().toString();
+    await setDoc(doc(db, "Trips", docId), {
+      userRefrence: formData,
+      tripData: TripData,
+      userEmail: user?.email,
+      id: docId,
+    });
+    setLoading(false);
+  };
 
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
@@ -229,7 +244,9 @@ function CreateTrip() {
 
         {/* Generate Trip */}
         <div className="flex justify-end my-10">
-          <Button onClick={OngenerateTrip}>Generate My Trip 🎉</Button>
+          <Button disabled={loading} onClick={OngenerateTrip}>
+            {loading ? <AiOutlineLoading3Quarters /> : "Genrate My Trip 🎉"}
+          </Button>
         </div>
         <Dialog open={openDialog}>
           <DialogTitle></DialogTitle>
@@ -237,14 +254,21 @@ function CreateTrip() {
             <DialogHeader>
               <DialogDescription>
                 <img src="/logo.svg" alt="" />
-                <h2 className="font-semibold text-lg mt-6">Sign In with Google</h2>
+                <h2 className="font-semibold text-lg mt-6">
+                  Sign In with Google
+                </h2>
                 <p>Sign in to the App to keep your Trips Save</p>
-                <Button onClick={login} className="w-full mt-5 flex gap-4 items-center">
-                  <FcGoogle/> Sign In with Google </Button>
+                <Button
+                  onClick={login}
+                  disabled={loading}
+                  className="w-full mt-5 flex gap-4 items-center"
+                >
+                  <FcGoogle /> Sign In with Google
+                </Button>
               </DialogDescription>
             </DialogHeader>
           </DialogContent>
-          </Dialog>
+        </Dialog>
       </div>
     </div>
   );
