@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { FaPlaneDeparture, FaCalendarAlt, FaUsers } from "react-icons/fa";
 // import { FcGoogle } from "react-icons/fc";
-
 import { FaMoneyBills } from "react-icons/fa6";
 import { toast } from "sonner";
 // import {
