@@ -1,8 +1,12 @@
-import {} from "react";
+import { useInView } from "react-intersection-observer";
 import CountUp from "react-countup";
 import solotraveler from "./solotraveler.png";
 
 function Intro() {
+  const [refDestinations, inViewDestinations] = useInView({ triggerOnce: true });
+  const [refTourists, inViewTourists] = useInView({ triggerOnce: true });
+  const [refHotels, inViewHotels] = useInView({ triggerOnce: true });
+
   return (
     <div className="flex flex-col md:flex-row items-center gap-10 mt-10 px-6 md:px-20">
       {/* Left Section: Image */}
@@ -31,42 +35,60 @@ function Intro() {
 
         {/* Card Section */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center">
-          <CountUp
-              start={0}
-              end={300}
-              duration={4}
-              className="font-bold text-xl sm:text-2xl text-blue-500"
-            />
-            <span className="font-bold text-xl sm:text-2xl text-blue-500">
-              +
-            </span>
+          {/* Destinations */}
+          <div
+            ref={refDestinations}
+            className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center"
+          >
+            {inViewDestinations && (
+              <>
+                <CountUp
+                  start={0}
+                  end={300}
+                  duration={4}
+                  className="font-bold text-xl sm:text-2xl text-blue-500"
+                />
+                <span className="font-bold text-xl sm:text-2xl text-blue-500">+</span>
+              </>
+            )}
             <p className="text-gray-500 text-sm sm:text-base">DESTINATIONS</p>
           </div>
 
-          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center">
-          <CountUp
-              start={3500}
-              end={5000}
-              duration={4}
-              className="font-bold text-xl sm:text-2xl text-blue-500"
-            />
-            <span className="font-bold text-xl sm:text-2xl text-blue-500">
-              +
-            </span>
+          {/* Tourists */}
+          <div
+            ref={refTourists}
+            className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center"
+          >
+            {inViewTourists && (
+              <>
+                <CountUp
+                  start={3500}
+                  end={5000}
+                  duration={4}
+                  className="font-bold text-xl sm:text-2xl text-blue-500"
+                />
+                <span className="font-bold text-xl sm:text-2xl text-blue-500">+</span>
+              </>
+            )}
             <p className="text-gray-500 text-sm sm:text-base">TOURISTS</p>
           </div>
 
-          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center">
-            <CountUp
-              start={0}
-              end={150}
-              duration={4}
-              className="font-bold text-xl sm:text-2xl text-blue-500"
-            />
-            <span className="font-bold text-xl sm:text-2xl text-blue-500">
-              +
-            </span>
+          {/* Hotels */}
+          <div
+            ref={refHotels}
+            className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center"
+          >
+            {inViewHotels && (
+              <>
+                <CountUp
+                  start={0}
+                  end={150}
+                  duration={4}
+                  className="font-bold text-xl sm:text-2xl text-blue-500"
+                />
+                <span className="font-bold text-xl sm:text-2xl text-blue-500">+</span>
+              </>
+            )}
             <p className="text-gray-500 text-sm sm:text-base">HOTELS</p>
           </div>
         </div>
