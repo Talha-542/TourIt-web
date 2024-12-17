@@ -25,12 +25,15 @@ import {
 } from "@/components/ui/dialog";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { useNavigate} from "react-router-dom";
 
 function CreateTrip() {
   const [formData, setFormData] = useState([]);
   const [place, setPlace] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const router=useNavigate();
 
   const handleTnputChange = (name, value) => {
     if (name === "NoOfDays" && value > 5) {
@@ -128,7 +131,11 @@ function CreateTrip() {
       id: docId,
     });
     setLoading(false);
+    router('/view-trip/'+docId)
   };
+
+
+
 
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
