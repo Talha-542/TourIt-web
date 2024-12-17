@@ -45,7 +45,7 @@ export const SelectBudgetOptions=[
     {
         id:3,
         title:'Luxury',
-        desc:"Haram ka paysa",
+        desc:"No Worries about Money",
         icon:"💸",
     },
 ]
