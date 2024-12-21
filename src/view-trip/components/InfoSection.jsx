@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { FaShare } from "react-icons/fa";
-
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
 function InfoSection({ trip }) {
@@ -26,7 +26,7 @@ function InfoSection({ trip }) {
 
       {/* Trip Details */}
       <div className="flex justify-between">
-        <div className=" flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <h2 className="font-bold text-2xl">
             {tripData?.location || "Location not specified"}
           </h2>
@@ -38,7 +38,7 @@ function InfoSection({ trip }) {
               💰 Budget: {tripData?.budget || "N/A"}
             </h2>
             <h2 className="p-1 px-3 bg-gray-200 rounded-full text-gray-500 text-xs md:text-md">
-              👪 Travelers: {tripData?.travelers || "N/A"}{" "}
+              👪 Travelers: {tripData?.travelers || "N/A"}
             </h2>
           </div>
         </div>
@@ -46,25 +46,44 @@ function InfoSection({ trip }) {
           <FaShare />
         </Button>
       </div>
-  {/* Hotels List */}
-  <div className="">
+
+      {/* Hotels List */}
+      <div>
         {tripData?.hotels && tripData.hotels.length > 0 ? (
           <div>
-            <h3 className="font-bold text-xl mt-5"> Recommended Hotels:</h3>
+            <h3 className="font-bold text-xl mt-5">Recommended Hotels:</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {tripData.hotels.map((hotel, index) => (
-                <div key={index} className="border rounded-xl p-4 hover:scale-105 transition-all cursor-pointer">
-                  <img
-                    src="/trip.jpg"
-                    alt={hotel.hotelName}
-                    className="w-full h-auto rounded-lg mb-4"
-                  />
-                  <h4 className="font-bold text-lg">{hotel?.hotelName}</h4>
-                  <p className="text-xs text-gray-500">📍{hotel?.hotelAddress}</p>
-                  <p className="text-sm font-bold">Price: {hotel?.price}</p>
-                  <p className="text-sm font-medium">Rating: {hotel?.rating} ★</p>
-                  {/* <p className="text-xs text-gray-500">{hotel.description}</p> */}
-                </div>
+                <Link
+                  target="blank"
+                  key={index}
+                  to={
+                    "https://www.google.com/maps/search/?api=1&query=" +
+                    hotel?.hotelName +
+                    "," +
+                    hotel?.hotelAddress
+                  }
+                  className="text-black"
+                >
+                  <div className="border rounded-xl p-4 hover:scale-105 transition-all cursor-pointer">
+                    <img
+                      src="/trip.jpg"
+                      alt={hotel.hotelName}
+                      className="w-full h-auto rounded-lg mb-4"
+                    />
+                    <h4 className="font-bold text-lg">{hotel?.hotelName}</h4>
+                    <p className="text-xs text-gray-500">
+                      📍{hotel?.hotelAddress}
+                    </p>
+                    <p className="text-sm font-bold">Price: {hotel?.price}</p>
+                    <p className="text-sm font-medium">
+                      Rating: {hotel?.rating} ★
+                    </p>
+                    <p className="text-xs text-gray-500 my-2">
+                      {hotel.description}
+                    </p>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -74,21 +93,7 @@ function InfoSection({ trip }) {
       </div>
 
       {/* Itinerary */}
-      {/* {tripData?.itinerary ? (
-        <div>
-          <h3 className="font-semibold mt-4">Itinerary:</h3>
-          {Object.entries(tripData.itinerary).map(([day, activities]) => (
-            <div key={day}>
-              <p>
-                <strong>{day}:</strong>{" "}
-                {activities.description || "No activities planned"}
-              </p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No itinerary provided.</p>
-      )} */}
+
     </div>
   );
 }
