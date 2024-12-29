@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
+import { GetPlaceDetails } from "@/service/GlobalApi";
 import { ImDownload3 } from "react-icons/im";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import { saveAs } from "file-saver";
+import { useEffect, useCallback } from "react";
 
+// const PHOTO_REF_URL='https://places.googleapis.com/v1/{NAME}/media?key='+import.meta.env.VITE_GOOGLE_PLACE_API_KEY
 function InfoSection({ trip }) {
   let tripData = null;
 
@@ -248,6 +251,20 @@ function InfoSection({ trip }) {
     const blob = await Packer.toBlob(doc);
     saveAs(blob, `${tripData?.location || "trip"}-itinerary.docx`);
   };
+
+  const GetPlacePhoto = useCallback(async () => {
+    const data = {
+      textQuery: tripData?.location
+    }
+    const result = await GetPlaceDetails(data).then(resp => {
+      console.log(resp.data.places[0].photos[3].name)
+    })
+    console.log(result)
+  }, [tripData?.location])
+
+  useEffect(() => {
+    GetPlacePhoto()
+  }, [trip, GetPlacePhoto])
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 ">
