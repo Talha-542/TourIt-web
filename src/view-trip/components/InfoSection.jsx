@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FaFileWord } from "react-icons/fa6";
+import { ImDownload3 } from "react-icons/im";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Document, Packer, Paragraph, TextRun } from "docx";
@@ -19,219 +19,234 @@ function InfoSection({ trip }) {
 
   const exportToWord = async () => {
     const doc = new Document({
-      sections: [{
-        properties: {},
-        children: [
-          // Title Section with Location
-          new Paragraph({
-            spacing: { before: 200, after: 200 },
-            alignment: "CENTER",
-            children: [
-              new TextRun({
-                text: "Travel Itinerary\n",
-                bold: true,
-                size: 40,
-                color: "2E5090",
-              }),
-              new TextRun({
-                text: tripData?.location || "Location not specified",
-                size: 32,
-                break: 1,
-              }),
-            ],
-          }),
-
-          // Trip Overview Section
-          new Paragraph({
-            spacing: { before: 300, after: 200 },
-            children: [
-              new TextRun({
-                text: "Trip Overview",
-                bold: true,
-                size: 28,
-                color: "2E5090",
-              }),
-            ],
-          }),
-          new Paragraph({
-            spacing: { before: 100, after: 100 },
-            bullet: {
-              level: 0
-            },
-            children: [
-              new TextRun({ text: "Duration: ", bold: true }),
-              new TextRun({ text: tripData?.duration || "N/A" }),
-            ],
-          }),
-          new Paragraph({
-            spacing: { before: 100, after: 100 },
-            bullet: {
-              level: 0
-            },
-            children: [
-              new TextRun({ text: "Budget: ", bold: true }),
-              new TextRun({ text: tripData?.budget || "N/A" }),
-            ],
-          }),
-          new Paragraph({
-            spacing: { before: 100, after: 200 },
-            bullet: {
-              level: 0
-            },
-            children: [
-              new TextRun({ text: "Travelers: ", bold: true }),
-              new TextRun({ text: tripData?.travelers || "N/A" }),
-            ],
-          }),
-
-          // Hotels Section
-          new Paragraph({
-            spacing: { before: 300, after: 200 },
-            children: [
-              new TextRun({
-                text: "Recommended Hotels",
-                bold: true,
-                size: 28,
-                color: "2E5090",
-              }),
-            ],
-          }),
-          ...(tripData?.hotels || []).flatMap(hotel => [
+      sections: [
+        {
+          properties: {},
+          children: [
+            // Title Section with Location
             new Paragraph({
-              spacing: { before: 200 },
+              spacing: { before: 200, after: 200 },
+              alignment: "CENTER",
               children: [
                 new TextRun({
-                  text: hotel.hotelName,
+                  text: "Travel Itinerary\n",
                   bold: true,
-                  size: 24,
+                  size: 40,
+                  color: "2E5090",
+                }),
+                new TextRun({
+                  text: tripData?.location || "Location not specified",
+                  size: 32,
+                  break: 1,
+                }),
+              ],
+            }),
+
+            // Trip Overview Section
+            new Paragraph({
+              spacing: { before: 300, after: 200 },
+              children: [
+                new TextRun({
+                  text: "Trip Overview",
+                  bold: true,
+                  size: 28,
+                  color: "2E5090",
                 }),
               ],
             }),
             new Paragraph({
-              spacing: { before: 100 },
+              spacing: { before: 100, after: 100 },
+              bullet: {
+                level: 0,
+              },
               children: [
-                new TextRun({ text: "📍 Address: ", bold: true }),
-                new TextRun({ text: hotel.hotelAddress }),
+                new TextRun({ text: "Duration: ", bold: true }),
+                new TextRun({ text: tripData?.duration || "N/A" }),
               ],
             }),
             new Paragraph({
-              spacing: { before: 100 },
+              spacing: { before: 100, after: 100 },
+              bullet: {
+                level: 0,
+              },
               children: [
-                new TextRun({ text: "💰 Price: ", bold: true }),
-                new TextRun({ text: hotel.price }),
-              ],
-            }),
-            new Paragraph({
-              spacing: { before: 100 },
-              children: [
-                new TextRun({ text: "⭐ Rating: ", bold: true }),
-                new TextRun({ text: `${hotel.rating} stars` }),
+                new TextRun({ text: "Budget: ", bold: true }),
+                new TextRun({ text: tripData?.budget || "N/A" }),
               ],
             }),
             new Paragraph({
               spacing: { before: 100, after: 200 },
+              bullet: {
+                level: 0,
+              },
               children: [
-                new TextRun({ text: "📝 Description: ", bold: true }),
-                new TextRun({ text: hotel.description }),
+                new TextRun({ text: "Travelers: ", bold: true }),
+                new TextRun({ text: tripData?.travelers || "N/A" }),
               ],
             }),
-          ]),
 
-          // Itinerary Section
-          new Paragraph({
-            spacing: { before: 300, after: 200 },
-            children: [
-              new TextRun({
-                text: "Daily Itinerary",
-                bold: true,
-                size: 28,
-                color: "2E5090",
-              }),
-            ],
-          }),
-          ...Object.entries(tripData?.itinerary || {}).flatMap(([day, activity]) => [
-            // Day Header
+            // Hotels Section
             new Paragraph({
-              spacing: { before: 200 },
+              spacing: { before: 300, after: 200 },
               children: [
                 new TextRun({
-                  text: day,
+                  text: "Recommended Hotels",
                   bold: true,
-                  size: 24,
-                  color: "4472C4",
+                  size: 28,
+                  color: "2E5090",
                 }),
               ],
             }),
-            new Paragraph({
-              spacing: { before: 100 },
-              children: [
-                new TextRun({ text: "🎯 Theme: ", bold: true }),
-                new TextRun({ text: activity.theme }),
-              ],
-            }),
-            new Paragraph({
-              spacing: { before: 100, after: 200 },
-              children: [
-                new TextRun({ text: "⏰ Best Time to Visit: ", bold: true }),
-                new TextRun({ text: activity.bestTimeToVisit }),
-              ],
-            }),
-            // Places for the day
-            ...activity.places.map(place => [
+            ...(tripData?.hotels || []).flatMap((hotel) => [
               new Paragraph({
-                spacing: { before: 100 },
+                spacing: { before: 200 },
                 children: [
                   new TextRun({
-                    text: place.placeName,
+                    text: hotel.hotelName,
                     bold: true,
-                    size: 22,
+                    size: 24,
                   }),
                 ],
               }),
               new Paragraph({
                 spacing: { before: 100 },
                 children: [
-                  new TextRun({ text: "📝 Details: ", bold: true }),
-                  new TextRun({ text: place.placeDetails }),
+                  new TextRun({ text: "📍 Address: ", bold: true }),
+                  new TextRun({ text: hotel.hotelAddress }),
                 ],
               }),
               new Paragraph({
                 spacing: { before: 100 },
                 children: [
-                  new TextRun({ text: "🎫 Ticket Pricing: ", bold: true }),
-                  new TextRun({ text: place.ticketPricing }),
+                  new TextRun({ text: "💰 Price: ", bold: true }),
+                  new TextRun({ text: hotel.price }),
+                ],
+              }),
+              new Paragraph({
+                spacing: { before: 100 },
+                children: [
+                  new TextRun({ text: "⭐ Rating: ", bold: true }),
+                  new TextRun({ text: `${hotel.rating} stars` }),
                 ],
               }),
               new Paragraph({
                 spacing: { before: 100, after: 200 },
                 children: [
-                  new TextRun({ text: "🚗 Time to Travel: ", bold: true }),
-                  new TextRun({ text: place.timeToTravel }),
+                  new TextRun({ text: "📝 Description: ", bold: true }),
+                  new TextRun({ text: hotel.description }),
                 ],
               }),
-            ]).flat(),
-          ]),
+            ]),
 
-          // Footer
-          new Paragraph({
-            spacing: { before: 300, after: 200 },
-            alignment: "CENTER",
-            children: [
-              new TextRun({
-                text: "Generated by TourIt",
-                italic: true,
-                size: 20,
-                color: "808080",
-              }),
-            ],
-          }),
-        ],
-      }],
+            // Itinerary Section
+            new Paragraph({
+              spacing: { before: 300, after: 200 },
+              children: [
+                new TextRun({
+                  text: "Daily Itinerary",
+                  bold: true,
+                  size: 28,
+                  color: "2E5090",
+                }),
+              ],
+            }),
+            ...Object.entries(tripData?.itinerary || {}).flatMap(
+              ([day, activity]) => [
+                // Day Header
+                new Paragraph({
+                  spacing: { before: 200 },
+                  children: [
+                    new TextRun({
+                      text: day,
+                      bold: true,
+                      size: 24,
+                      color: "4472C4",
+                    }),
+                  ],
+                }),
+                new Paragraph({
+                  spacing: { before: 100 },
+                  children: [
+                    new TextRun({ text: "🎯 Theme: ", bold: true }),
+                    new TextRun({ text: activity.theme }),
+                  ],
+                }),
+                new Paragraph({
+                  spacing: { before: 100, after: 200 },
+                  children: [
+                    new TextRun({
+                      text: "⏰ Best Time to Visit: ",
+                      bold: true,
+                    }),
+                    new TextRun({ text: activity.bestTimeToVisit }),
+                  ],
+                }),
+                // Places for the day
+                ...activity.places
+                  .map((place) => [
+                    new Paragraph({
+                      spacing: { before: 100 },
+                      children: [
+                        new TextRun({
+                          text: place.placeName,
+                          bold: true,
+                          size: 22,
+                        }),
+                      ],
+                    }),
+                    new Paragraph({
+                      spacing: { before: 100 },
+                      children: [
+                        new TextRun({ text: "📝 Details: ", bold: true }),
+                        new TextRun({ text: place.placeDetails }),
+                      ],
+                    }),
+                    new Paragraph({
+                      spacing: { before: 100 },
+                      children: [
+                        new TextRun({
+                          text: "🎫 Ticket Pricing: ",
+                          bold: true,
+                        }),
+                        new TextRun({ text: place.ticketPricing }),
+                      ],
+                    }),
+                    new Paragraph({
+                      spacing: { before: 100, after: 200 },
+                      children: [
+                        new TextRun({
+                          text: "🚗 Time to Travel: ",
+                          bold: true,
+                        }),
+                        new TextRun({ text: place.timeToTravel }),
+                      ],
+                    }),
+                  ])
+                  .flat(),
+              ]
+            ),
+
+            // Footer
+            new Paragraph({
+              spacing: { before: 300, after: 200 },
+              alignment: "CENTER",
+              children: [
+                new TextRun({
+                  text: "Generated by TourIt",
+                  italic: true,
+                  size: 20,
+                  color: "808080",
+                }),
+              ],
+            }),
+          ],
+        },
+      ],
     });
 
     // Generate and save the document
     const blob = await Packer.toBlob(doc);
-    saveAs(blob, `${tripData?.location || 'trip'}-itinerary.docx`);
+    saveAs(blob, `${tripData?.location || "trip"}-itinerary.docx`);
   };
 
   return (
@@ -262,7 +277,7 @@ function InfoSection({ trip }) {
           </div>
         </div>
         <Button onClick={exportToWord}>
-          <FaFileWord />
+          <ImDownload3  />
         </Button>
       </div>
 
