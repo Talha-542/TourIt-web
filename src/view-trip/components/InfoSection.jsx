@@ -32,7 +32,7 @@ function InfoSection({ trip }) {
               alignment: "CENTER",
               children: [
                 new TextRun({
-                  text: "Travel Itinerary\n",
+                  text: "Tour It\n",
                   bold: true,
                   size: 40,
                   color: "2E5090",
@@ -114,28 +114,28 @@ function InfoSection({ trip }) {
               new Paragraph({
                 spacing: { before: 100 },
                 children: [
-                  new TextRun({ text: "📍 Address: ", bold: true }),
+                  new TextRun({ text: "Address: ", bold: true }),
                   new TextRun({ text: hotel.hotelAddress }),
                 ],
               }),
               new Paragraph({
                 spacing: { before: 100 },
                 children: [
-                  new TextRun({ text: "💰 Price: ", bold: true }),
+                  new TextRun({ text: "Price: ", bold: true }),
                   new TextRun({ text: hotel.price }),
                 ],
               }),
               new Paragraph({
                 spacing: { before: 100 },
                 children: [
-                  new TextRun({ text: "⭐ Rating: ", bold: true }),
+                  new TextRun({ text: "Rating: ", bold: true }),
                   new TextRun({ text: `${hotel.rating} stars` }),
                 ],
               }),
               new Paragraph({
                 spacing: { before: 100, after: 200 },
                 children: [
-                  new TextRun({ text: "📝 Description: ", bold: true }),
+                  new TextRun({ text: "Description: ", bold: true }),
                   new TextRun({ text: hotel.description }),
                 ],
               }),
@@ -160,7 +160,7 @@ function InfoSection({ trip }) {
                   spacing: { before: 200 },
                   children: [
                     new TextRun({
-                      text: day,
+                      text: `${day.charAt(0).toUpperCase() + day.slice(1, 3)} ${day.slice(3)}`,
                       bold: true,
                       size: 24,
                       color: "4472C4",
@@ -170,7 +170,7 @@ function InfoSection({ trip }) {
                 new Paragraph({
                   spacing: { before: 100 },
                   children: [
-                    new TextRun({ text: "🎯 Theme: ", bold: true }),
+                    new TextRun({ text: "Theme: ", bold: true }),
                     new TextRun({ text: activity.theme }),
                   ],
                 }),
@@ -178,7 +178,7 @@ function InfoSection({ trip }) {
                   spacing: { before: 100, after: 200 },
                   children: [
                     new TextRun({
-                      text: "⏰ Best Time to Visit: ",
+                      text: "Best Time to Visit: ",
                       bold: true,
                     }),
                     new TextRun({ text: activity.bestTimeToVisit }),
