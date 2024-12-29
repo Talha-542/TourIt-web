@@ -1,6 +1,6 @@
 {
-  "name": "TourIt",
-  "short_name": "TourIt",
+  "name": "MyWebSite",
+  "short_name": "MySite",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -16,6 +16,6 @@
     }
   ],
   "theme_color": "#ffffff",
-  "background_color": "#7ab2d3",
+  "background_color": "#ffffff",
   "display": "standalone"
 }
