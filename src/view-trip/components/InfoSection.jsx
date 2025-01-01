@@ -5,10 +5,13 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import { saveAs } from "file-saver";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 
-// const PHOTO_REF_URL='https://places.googleapis.com/v1/{NAME}/media?key='+import.meta.env.VITE_GOOGLE_PLACE_API_KEY
+const PHOTO_REF_URL='https://places.googleapis.com/v1/{NAME}/media?maxWidthPx=1000&maxHeightPx=1000&key='+import.meta.env.VITE_GOOGLE_PLACE_API_KEY
 function InfoSection({ trip }) {
+  const [photoUrl, setPhotoUrl] = useState();
+  const [hotelPhotos, setHotelPhotos] = useState({});
+  const [placePhotos, setPlacePhotos] = useState({});
   let tripData = null;
 
   // Attempt to parse tripData
@@ -252,25 +255,76 @@ function InfoSection({ trip }) {
     saveAs(blob, `${tripData?.location || "trip"}-itinerary.docx`);
   };
 
-  const GetPlacePhoto = useCallback(async () => {
+  const GetPlacePhoto = useCallback(async (placeName) => {
     const data = {
-      textQuery: tripData?.location
+      textQuery: placeName
     }
-    const result = await GetPlaceDetails(data).then(resp => {
-      console.log(resp.data.places[0].photos[3].name)
-    })
-    console.log(result)
-  }, [tripData?.location])
+    try {
+      const resp = await GetPlaceDetails(data);
+      if (resp.data.places[0]?.photos?.[0]?.name) {
+        const photoUrl = PHOTO_REF_URL.replace('{NAME}', resp.data.places[0].photos[0].name);
+        setPlacePhotos(prev => ({...prev, [placeName]: photoUrl}));
+      }
+    } catch (error) {
+      console.error("Error fetching place photo:", error);
+    }
+  }, []);
+
+  const GetHotelPhoto = useCallback(async (hotelName, hotelAddress) => {
+    const data = {
+      textQuery: `${hotelName} ${hotelAddress}`
+    }
+    try {
+      const resp = await GetPlaceDetails(data);
+      if (resp.data.places[0]?.photos?.[0]?.name) {
+        const photoUrl = PHOTO_REF_URL.replace('{NAME}', resp.data.places[0].photos[0].name);
+        setHotelPhotos(prev => ({...prev, [hotelName]: photoUrl}));
+      }
+    } catch (error) {
+      console.error("Error fetching hotel photo:", error);
+    }
+  }, []);
+
+  const GetLocationPhoto = useCallback(async () => {
+    if (tripData?.location) {
+      const data = {
+        textQuery: tripData.location
+      }
+      try {
+        const resp = await GetPlaceDetails(data);
+        if (resp.data.places[0]?.photos?.[0]?.name) {
+          const photoUrl = PHOTO_REF_URL.replace('{NAME}', resp.data.places[0].photos[0].name);
+          setPhotoUrl(photoUrl);
+        }
+      } catch (error) {
+        console.error("Error fetching location photo:", error);
+      }
+    }
+  }, [tripData?.location]);
 
   useEffect(() => {
-    GetPlacePhoto()
-  }, [trip, GetPlacePhoto])
+    GetLocationPhoto();
+    // Fetch photos for hotels
+    if (tripData?.hotels) {
+      tripData.hotels.forEach(hotel => {
+        GetHotelPhoto(hotel.hotelName, hotel.hotelAddress);
+      });
+    }
+    // Fetch photos for places
+    if (tripData?.itinerary) {
+      Object.values(tripData.itinerary).forEach(day => {
+        day.places.forEach(place => {
+          GetPlacePhoto(place.placeName);
+        });
+      });
+    }
+  }, [trip, GetLocationPhoto, GetHotelPhoto, GetPlacePhoto, tripData?.hotels, tripData?.itinerary]);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 ">
       {/* Image Section */}
       <img
-        src="/trip.jpg"
+        src={photoUrl}
         alt="Trip"
         className="h-[250px] sm:h-[350px] lg:h-[420px] w-full object-cover rounded-xl mb-6"
       />
@@ -318,9 +372,9 @@ function InfoSection({ trip }) {
                 >
                   <div className="border rounded-xl p-4 hover:scale-105 transition-all cursor-pointer">
                     <img
-                      src="/trip.jpg"
+                      src={hotelPhotos[hotel.hotelName] || "/trip.jpg"}
                       alt={hotel.hotelName}
-                      className="w-full h-auto rounded-lg mb-4"
+                      className="w-full h-[200px] object-cover rounded-lg mb-4"
                     />
                     <h4 className="font-bold text-lg">{hotel?.hotelName}</h4>
                     <p className="text-xs text-gray-500">
@@ -383,7 +437,7 @@ function InfoSection({ trip }) {
                         <div className="border rounded-xl p-4 flex flex-col sm:flex-row gap-4 bg-white shadow-lg">
                           {/* Image */}
                           <img
-                            src="/trip.jpg"
+                            src={placePhotos[place.placeName] || "/trip.jpg"}
                             alt={place.placeName}
                             className="w-[120px] h-[120px] object-cover rounded-lg"
                           />
@@ -431,6 +485,9 @@ function InfoSection({ trip }) {
           <p>No itinerary provided.</p>
         )}
       </div>
+    <div className="flex justify-center items-center mt-5">
+    <p className="text-sm text-gray-500">Generated by TourIt  &#169; 2025</p>
+    </div>
     </div>
   );
 }
