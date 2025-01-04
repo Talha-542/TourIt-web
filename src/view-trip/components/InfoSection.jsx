@@ -6,7 +6,15 @@ import PropTypes from "prop-types";
 
 import { useEffect, useCallback, useState } from "react";
 import { exportToWordDocument } from "@/Hooks/Export";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { FaFileWord, FaFilePdf, FaShareAlt } from "react-icons/fa";
+import { exportToPdf } from "@/Hooks/Pdf";
+import { toast } from "sonner";
 const PHOTO_REF_URL='https://places.googleapis.com/v1/{NAME}/media?maxWidthPx=1000&maxHeightPx=1000&key='+import.meta.env.VITE_GOOGLE_PLACE_API_KEY
 function InfoSection({ trip }) {
   const [photoUrl, setPhotoUrl] = useState();
@@ -96,8 +104,19 @@ function InfoSection({ trip }) {
     }
   };
 
+  
+
+  const handleShare = () => {
+    const currentUrl = window.location.href;
+    navigator.clipboard.writeText(currentUrl).then(() => {
+      toast.success("Link copied to clipboard!");
+    }).catch(err => {
+      console.error('Failed to copy link:', err);
+    });
+  };
+
   return (
-    <div className="px-4 sm:px-6 lg:px-8 ">
+    <div id="pdf-content" className="px-4 sm:px-6 lg:px-8">
       {/* Image Section */}
       <img
         src={photoUrl}
@@ -123,9 +142,28 @@ function InfoSection({ trip }) {
             </h2>
           </div>
         </div>
-        <Button onClick={handleExport}>
-          <ImDownload3 />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button>
+              <ImDownload3 className="mr-2" />
+              Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={handleExport}>
+              <FaFileWord className="mr-2" />
+              Export as Word
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => exportToPdf(tripData)}>
+              <FaFilePdf className="mr-2" />
+              Export as PDF
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleShare}>
+              <FaShareAlt className="mr-2" />
+              Share as Link
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Hotels List */}
@@ -153,7 +191,7 @@ function InfoSection({ trip }) {
                       alt="Some Photos might not be available because we have a low budget and sucks at writing quality code"
                       className="w-full h-[200px] object-cover rounded-lg mb-4"
                     />
-                    <h4 className="font-bold text-lg">{hotel?.hotelName}</h4>
+                    <h4 className="font-bold text-lg truncate">{hotel?.hotelName}</h4>
                     <p className="text-xs text-gray-500">
                       📍{hotel?.hotelAddress}
                     </p>

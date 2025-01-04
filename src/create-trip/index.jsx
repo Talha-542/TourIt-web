@@ -177,6 +177,7 @@ function CreateTrip() {
               type="number"
               onChange={(e) => handleTnputChange("NoOfDays", e.target.value)}
               className="w-full"
+              
             />
           </div>
         </div>
