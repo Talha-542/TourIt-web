@@ -36,7 +36,7 @@ function CreateTrip() {
   const router=useNavigate();
 
   const handleTnputChange = (name, value) => {
-    if (name === "NoOfDays" && value > 5) {
+    if (name === "NoOfDays" && value > 20) {
       toast.error("Please enter a duration of 5 days or less.");
       return;
     }
@@ -68,7 +68,7 @@ function CreateTrip() {
       return;
     }
     if (
-      (formData?.NoOfDays > 5 && !formData?.location) ||
+      (formData?.NoOfDays > 20 && !formData?.location) ||
       !formData?.budget ||
       !formData?.traveler
     ) {
