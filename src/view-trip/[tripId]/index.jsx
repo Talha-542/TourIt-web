@@ -26,7 +26,7 @@ function ViewTrip() {
     }
   };
   return (
-    <div className="p-10 md:px-20 lg:px-44 xl:px-56">
+    <div className="content-container max-w-7xl mx-auto px-4">
       {/* {tripId} */}
       {/* Info Section */}
       <InfoSection trip={trip} />

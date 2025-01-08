@@ -138,8 +138,8 @@ function CreateTrip() {
 
 
   return (
-    <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
-      <h2 className="font-bold text-4xl text-primary">
+    <div className="content-container sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5">
+      <h2 className="font-bold text-4xl text-primary  ">
         Plan Your Dream Getaway ✈️
       </h2>
       <p className="mt-4 text-secondary text-lg leading-relaxed">
@@ -177,7 +177,6 @@ function CreateTrip() {
               type="number"
               onChange={(e) => handleTnputChange("NoOfDays", e.target.value)}
               className="w-full"
-              
             />
           </div>
         </div>
