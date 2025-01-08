@@ -7,7 +7,7 @@ import {
 } from "@/constants/options";
 import { chatSession } from "@/service/AIModal";
 import { useEffect, useState } from "react";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+// import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { FaPlaneDeparture, FaCalendarAlt, FaUsers } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { db } from "@/service/firebaseConfig";
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function CreateTrip() {
   const [formData, setFormData] = useState([]);
@@ -33,7 +33,7 @@ function CreateTrip() {
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const router=useNavigate();
+  const router = useNavigate();
 
   const handleTnputChange = (name, value) => {
     if (name === "NoOfDays" && value > 20) {
@@ -131,11 +131,8 @@ function CreateTrip() {
       id: docId,
     });
     setLoading(false);
-    router('/view-trip/'+docId)
+    router("/view-trip/" + docId);
   };
-
-
-
 
   return (
     <div className="content-container sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5">
@@ -154,15 +151,15 @@ function CreateTrip() {
               <FaPlaneDeparture className="text-2xl mr-1 text-black" /> Where do
               you want to go?
             </h2>
-            <GooglePlacesAutocomplete
-              apiKey={import.meta.env.VITE_GOOGLE_PLACE_API_KEY}
-              selectProps={{
-                place,
-                onChange: (v) => {
-                  setPlace(v);
-                  handleTnputChange("location", v);
-                },
+            <Input
+              type="text"
+              value={place?.label || ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                setPlace({ label: value });
+                handleTnputChange("location", { label: value });
               }}
+              placeholder="Enter a location"
             />
           </div>
 

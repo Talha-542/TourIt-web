@@ -77,7 +77,12 @@ export const Header = () => {
         <div>
           {users ? (
             <div className="flex items-center gap-4">
-             <a href="/my-trips">
+               <a href="/create-trip" className="text-black">
+              <Button variant="outline" className="rounded-full hover:bg-primary/10">
+                + Create Trip
+              </Button>
+             </a>
+             <a href="/my-trips" className="text-black">
               <Button variant="outline" className="rounded-full hover:bg-primary/10">
                 My trips
               </Button>
