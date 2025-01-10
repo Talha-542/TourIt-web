@@ -44,13 +44,13 @@ function MyTripCard({ trip }) {
   }
 
   return (
-    <div>
+    <div className="flex flex-col hover:scale-105 transition-all duration-300">
       <img
-        src={photoUrl }
+        src={photoUrl || "trip.jpg"  }
         alt={tripData?.location || "Trip location"}
         className="my-2 rounded-xl object-cover w-full h-48"
       />
-      <div>
+      <div className="flex flex-col ">
         <h2>{tripData?.location || "No location available"}</h2>
         <h2 className="text-sm">{tripData?.duration } with {tripData?.budget } budget</h2>
         <h2></h2>
