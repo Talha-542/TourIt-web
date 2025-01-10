@@ -40,7 +40,7 @@ function Mytrips() {
       <h1 className="text-4xl font-bold text-primary">My trips</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {userTrips.map((trip, index) => (
-          <Link to={`/view-trip/${trip.id}`} key={index} className="text-black">
+          <Link to={`/view-trip/${trip.id}`} key={index}>
             <MyTripCard trip={trip} />
           </Link>
         ))}
