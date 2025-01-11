@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -137,4 +138,8 @@ button:focus-visible {
 main,
 .content-container {
   padding-top: 76px; /* Adjust this value based on your header height */
+}
+
+.font-handwriting {
+  font-family: 'Kalam', cursive;
 }

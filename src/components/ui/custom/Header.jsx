@@ -73,7 +73,7 @@ export const Header = () => {
           />
           <span className="text-2xl font-extrabold text-primary">Tour It</span>
         </div>
-        
+
         <div>
           {users ? (
             <div className="flex items-center gap-4">
