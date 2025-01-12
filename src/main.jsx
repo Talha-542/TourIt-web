@@ -9,6 +9,7 @@ import { Toaster } from "./components/ui/sonner";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import ViewTrip from "./view-trip/[tripId]";
 import Mytrips from "./my-trips/trips";
+import Chatbot from "./Chatbot/Chatbot";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Header />
       <Toaster position="top-right" />
+      <Chatbot />
       <RouterProvider router={router} />
     </GoogleOAuthProvider>
   </StrictMode>
