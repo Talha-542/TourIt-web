@@ -97,8 +97,9 @@ export const Header = () => {
                     className="w-9 h-9 rounded-full object-cover"
                   />
                 </PopoverTrigger>
-                <PopoverContent className="w-48">
-                  <div className="flex flex-col gap-2 p-2">
+                <PopoverContent className="w-56">
+                  <div className="flex flex-col gap-2 p-3">
+                    <p className="text-sm">{users.email}</p>
                     <Button onClick={handleLogout} variant="ghost" className="w-full justify-start">
                       Logout
                     </Button>
