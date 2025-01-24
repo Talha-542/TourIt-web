@@ -36,3 +36,11 @@
 .read-the-docs {
   color: #888;
 }
+/* Add this to your global CSS file or a specific CSS file */
+.custom-scrollbar {
+  scrollbar-width: none; /* For Firefox */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+}

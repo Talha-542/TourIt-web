@@ -92,9 +92,10 @@ export const Header = () => {
               <Popover>
                 <PopoverTrigger className="rounded-full p-0 hover:ring-2 hover:ring-primary/20 transition-all">
                   <img
-                    src={users.picture}
+                    src={users?.picture || "/user-icon.svg"}
                     alt="user"
                     className="w-9 h-9 rounded-full object-cover"
+                    onError={(e) => { e.target.src = "/user-icon.svg"; }}
                   />
                 </PopoverTrigger>
                 <PopoverContent className="w-56">
