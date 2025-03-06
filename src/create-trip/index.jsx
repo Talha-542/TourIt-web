@@ -21,7 +21,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  // DialogTrigger,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
@@ -252,10 +252,13 @@ function CreateTrip() {
             {loading ? <AiOutlineLoading3Quarters /> : "Genrate My Trip 🎉"}
           </Button>
         </div>
-        <Dialog open={openDialog}>
-          <DialogTitle></DialogTitle>
+        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+          <DialogTrigger asChild>
+            <Button className="hidden">Open Dialog</Button>
+          </DialogTrigger>
           <DialogContent>
             <DialogHeader>
+              <DialogTitle>Sign In</DialogTitle>
               <DialogDescription>
                 <img src="/logo.svg" alt="" />
                 <h2 className="font-semibold text-lg mt-6">
