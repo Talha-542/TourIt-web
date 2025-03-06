@@ -279,13 +279,17 @@ function ContactUs() {
       <section className="py-10 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-gray-100 rounded-xl p-4 h-96 relative overflow-hidden">
-            {/* This is a placeholder for a map. In a real implementation, you would use Google Maps or similar */}
-            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-              <p className="text-center">
-                Interactive map would be displayed here.<br />
-                Integration with Google Maps or similar service required.
-              </p>
-            </div>
+            {/* Google Maps Integration */}
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3403.0916348658056!2d74.27149267463295!3d31.46666534979514!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3919039ecc46db03%3A0x838badf1b0f1beb7!2sTectSoft!5e0!3m2!1sen!2s!4v1741283658171!5m2!1sen!2s"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="TourIt Office Location"
+              className="rounded-lg"
+            ></iframe>
           </div>
         </div>
       </section>
