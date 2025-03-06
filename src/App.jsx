@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import './App.css';
 import Hero from './components/ui/custom/Hero';
 import Intro from './components/ui/custom/Intro/Intro';
+import Footer from './components/ui/custom/Footer';
 
 const App = () => {
   useEffect(() => {
@@ -21,6 +22,7 @@ const App = () => {
     <>
       <Hero />
       <Intro />
+      <Footer />
     </>
   );
 };
