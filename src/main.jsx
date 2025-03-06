@@ -9,6 +9,9 @@ import { Toaster } from "./components/ui/sonner";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import ViewTrip from "./view-trip/[tripId]";
 import Mytrips from "./my-trips/trips";
+import AboutUs from "./aboutUs";
+import ContactUs from "./contactUs";
+import { CookiePolicy, PrivacyPolicy, TermsOfService } from "./policies";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +30,26 @@ const router = createBrowserRouter([
   {
     path: "/my-trips",
     element: <Mytrips/>,
+  },
+  {
+    path: "/about",
+    element: <AboutUs/>,
+  },
+  {
+    path: "/contact",
+    element: <ContactUs/>,
+  },
+  {
+    path: "/terms",
+    element: <TermsOfService/>,
+  },
+  {
+    path: "/cookies",
+    element: <CookiePolicy/>,
+  },
+  {
+    path: "/privacy",
+    element: <PrivacyPolicy/>,
   },
 ]);
 
