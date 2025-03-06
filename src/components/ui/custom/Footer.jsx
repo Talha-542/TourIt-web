@@ -1,10 +1,12 @@
-
 // New Footer Component
 import { Button } from "../button";
 import { Link } from "react-router-dom";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 
 function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+  };
   return (
     <footer className="bg-gray-900 text-white pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -38,19 +40,19 @@ function Footer() {
             <h3 className="text-lg font-bold mb-6 border-b border-gray-700 pb-2">Quick Links</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="text-gray-400 hover:text-primary transition-colors">Home</Link>
+                <Link to="/" onClick={scrollToTop} className="text-gray-400 hover:text-primary transition-colors">Home</Link>
               </li>
               <li>
-                <Link to="/create-trip" className="text-gray-400 hover:text-primary transition-colors">Create Trip</Link>
+                <Link to="/create-trip" onClick={scrollToTop} className="text-gray-400 hover:text-primary transition-colors">Create Trip</Link>
               </li>
               {/* <li>
                 <Link to="/explore" className="text-gray-400 hover:text-primary transition-colors">Explore Destinations</Link>
               </li> */}
               <li>
-                <Link to="/about" className="text-gray-400 hover:text-primary transition-colors">About Us</Link>
+                <Link to="/about" onClick={scrollToTop} className="text-gray-400 hover:text-primary transition-colors">About Us</Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-400 hover:text-primary transition-colors">Contact Us</Link>
+                <Link to="/contact" onClick={scrollToTop} className="text-gray-400 hover:text-primary transition-colors">Contact Us</Link>
               </li>
             </ul>
           </div>
@@ -110,9 +112,9 @@ function Footer() {
             © {new Date().getFullYear()} TourIt. All rights reserved.
           </p>
           <div className="flex space-x-6">
-            <Link to="/terms" className="text-gray-500 hover:text-gray-300 text-sm">Terms of Service</Link>
-            <Link to="/privacy" className="text-gray-500 hover:text-gray-300 text-sm">Privacy Policy</Link>
-            <Link to="/cookies" className="text-gray-500 hover:text-gray-300 text-sm">Cookie Policy</Link>
+            <Link to="/terms" onClick={scrollToTop} className="text-gray-500 hover:text-gray-300 text-sm">Terms of Service</Link>
+            <Link to="/privacy" onClick={scrollToTop} className="text-gray-500 hover:text-gray-300 text-sm">Privacy Policy</Link>
+            <Link to="/cookies" onClick={scrollToTop} className="text-gray-500 hover:text-gray-300 text-sm">Cookie Policy</Link>
           </div>
         </div>
       </div>
