@@ -98,7 +98,7 @@ function Footer() {
             </ul>
             <div className="mt-6">
               <Link to="/contact">
-                <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
+                <Button onClick={scrollToTop} variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
                   Get In Touch
                 </Button>
               </Link>
