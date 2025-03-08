@@ -12,6 +12,7 @@ import Mytrips from "./my-trips/trips";
 import AboutUs from "./aboutUs";
 import ContactUs from "./contactUs";
 import { CookiePolicy, PrivacyPolicy, TermsOfService } from "./policies";
+import TodoList from './components/TodoList';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/view-trip/:tripId",
     element: <ViewTrip/>,
+  },
+  {
+    path: "/view-trip/:tripId/todo",
+    element: <TodoList />,
   },
   {
     path: "/my-trips",

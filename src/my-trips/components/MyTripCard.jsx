@@ -4,6 +4,8 @@ import { GetPlaceDetails } from "@/service/GlobalApi";
 import { FaPencilAlt } from "react-icons/fa";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
+import { CheckSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const PHOTO_REF_URL =
   "https://places.googleapis.com/v1/{NAME}/media?maxWidthPx=1000&maxHeightPx=1000&key=" +
@@ -14,6 +16,7 @@ function MyTripCard({ trip, onNoteUpdate, onCardClick }) {
   const [isNoteOpen, setIsNoteOpen] = useState(false);
   const [note, setNote] = useState(trip.note || "");
   let tripData = null;
+  const navigate = useNavigate();
 
   const getPlacePhoto = useCallback(async (placeName) => {
     const data = {
@@ -101,18 +104,33 @@ function MyTripCard({ trip, onNoteUpdate, onCardClick }) {
           )}
         </AnimatePresence>
 
-        {/* Edit Note Button */}
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsNoteOpen(true);
-          }}
-          className={`note-button absolute top-4 right-4 bg-white p-2 rounded-full shadow-md 
-            hover:bg-gray-100 transition-opacity duration-300
-            ${trip.note ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}
-        >
-          <FaPencilAlt className="text-primary" />
-        </button>
+        {/* Add Todo List Button next to Note Button */}
+        <div className="absolute top-4 right-4 flex gap-2">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/view-trip/${trip.id}/todo`);
+            }}
+            className="note-button bg-white p-2 rounded-full shadow-md 
+              hover:bg-gray-100 transition-opacity duration-300
+              opacity-0 group-hover:opacity-100"
+          >
+            <CheckSquare className="text-primary h-4 w-4" />
+          </button>
+          
+          {/* Existing Note Button */}
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsNoteOpen(true);
+            }}
+            className="note-button bg-white p-2 rounded-full shadow-md 
+              hover:bg-gray-100 transition-opacity duration-300
+              opacity-0 group-hover:opacity-100"
+          >
+            <FaPencilAlt className="text-primary" />
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col mt-4">
