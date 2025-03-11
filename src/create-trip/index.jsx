@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import {
   SelectBudgetOptions,
   SelectTravelList,
+  SelectFoodOptions,
   AI_PROMPT,
   SelectInterestOptions,
 } from "@/constants/options";
@@ -13,7 +14,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { db } from "@/service/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
 import { FcGoogle } from "react-icons/fc";
-import { FaMoneyBills } from "react-icons/fa6";
+import { FaMoneyBills, FaBowlFood } from "react-icons/fa6";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -55,7 +56,7 @@ function CreateTrip() {
   };
   
   const calculateFormProgress = (data) => {
-    const requiredFields = ["location", "NoOfDays", "budget", "traveler","interests"];
+    const requiredFields = ["location", "NoOfDays", "budget", "traveler"];
     const filledFields = requiredFields.filter(field => data[field]);
     setFormProgress((filledFields.length / requiredFields.length) * 100);
   };
@@ -302,6 +303,41 @@ function CreateTrip() {
                 <div className="text-5xl mb-4">{item.icon}</div>
                 <h3 className={`font-bold text-xl mb-2 ${
                   formData?.traveler === item.people ? "text-primary" : "text-gray-800"
+                }`}>
+                  {item.title}
+                </h3>
+                <p className="text-gray-600">
+                  {item.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+        {/* Food Selection */}
+<div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+          <div className="flex items-center gap-2 text-2xl font-bold text-gray-800 mb-6">
+            <div className="p-3 bg-blue-50 rounded-full">
+              <FaBowlFood className="text-xl text-primary" />
+            </div>
+            <span>What type of Food you like?</span>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {SelectFoodOptions.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => handleInputChange("food", item.title)}
+                className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl ${
+                  formData?.food === item.title
+                    ? "border-primary bg-primary/5 shadow-lg shadow-primary/10 transform -translate-y-1"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <div className="text-5xl mb-4">{item.icon}</div>
+                <h3 className={`font-bold text-xl mb-2 ${
+                  formData?.budget === item.title ? "text-primary" : "text-gray-800"
                 }`}>
                   {item.title}
                 </h3>

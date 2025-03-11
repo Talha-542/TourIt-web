@@ -50,6 +50,21 @@ export const SelectBudgetOptions=[
     },
 ]
 
+export const SelectFoodOptions=[
+    {
+        id:1,
+        title:'Fast Food',
+        desc:"Famous Fast Food Resturants",
+        icon:"🍔",
+    },
+    {
+        id:2,
+        title:'Traditional Food',
+        desc:"Keep it Average",
+        icon:"🥩",
+    },
+]
+
 export const SelectInterestOptions = [
     {
         id: 1,
