@@ -25,32 +25,32 @@ export const HistoryChatbotProvider = ({ children }) => {
     // Listen for route changes
     const handleRouteChange = () => {
       const path = window.location.pathname;
-      
+
       // Reset trip data when navigating away from trip view
       if (!path.includes('/view-trip/')) {
         setTripData(null);
         setCurrentLocation(null);
         return;
       }
-      
+
       // Extract trip ID from URL
       if (path.includes('/view-trip/')) {
         const tripId = path.split('/view-trip/')[1].split('/')[0];
-        
+
         // Try to get trip data from Firestore
         const fetchTripData = async () => {
           try {
             // First check localStorage for cached data
             const cachedTrips = JSON.parse(localStorage.getItem('allTrips') || '[]');
             const cachedTrip = cachedTrips.find(t => t.id === tripId);
-            
+
             if (cachedTrip && cachedTrip.tripData) {
               processTripData(cachedTrip.tripData);
             } else {
               // If not in localStorage, try to fetch from Firestore
               const tripDocRef = doc(db, "Trips", tripId);
               const tripDoc = await getDoc(tripDocRef);
-              
+
               if (tripDoc.exists()) {
                 const tripData = tripDoc.data();
                 if (tripData.tripData) {
@@ -62,7 +62,7 @@ export const HistoryChatbotProvider = ({ children }) => {
             console.error('Error fetching trip data:', error);
           }
         };
-        
+
         fetchTripData();
       }
     };
@@ -82,12 +82,12 @@ export const HistoryChatbotProvider = ({ children }) => {
         } else {
           parsedData = data;
         }
-        
+
         // Set the location from the trip data
         if (parsedData.location) {
           setCurrentLocation(parsedData.location);
         }
-        
+
         // Store the full trip data
         setTripData(parsedData);
       } catch (error) {
@@ -100,7 +100,7 @@ export const HistoryChatbotProvider = ({ children }) => {
 
     // Add event listener for route changes
     window.addEventListener('popstate', handleRouteChange);
-    
+
     // Also listen for navigation events that don't trigger popstate
     const originalPushState = history.pushState;
     history.pushState = function() {
@@ -147,4 +147,4 @@ export const HistoryChatbotProvider = ({ children }) => {
   );
 };
 
-export default HistoryChatbotContext; 
+export default HistoryChatbotContext;

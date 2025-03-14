@@ -221,7 +221,7 @@ const HistoryChatbot = () => {
       <div 
         className="history-chatbot-icon"
         onClick={handleToggleChatbot}
-        title="History Travel Guide"
+        title="Tourly"
       >
         <HistoryChatbotIcon size={28} />
       </div>
@@ -232,9 +232,9 @@ const HistoryChatbot = () => {
           <div className="history-chatbot-header">
             <div className="history-chatbot-title">
               <HistoryChatbotIcon size={20} color="white" />
-              <h3>History Travel Guide</h3>
+              <h3>Tourly</h3>
             </div>
-            <button 
+            <button
               className="history-chatbot-close"
               onClick={closeChatbot}
             >
