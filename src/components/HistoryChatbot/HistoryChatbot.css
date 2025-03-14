@@ -1,0 +1,374 @@
+/* History Chatbot Icon */
+.history-chatbot-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #3b82f6; /* primary color */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.history-chatbot-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  background-color: #2563eb;
+}
+
+/* History Chatbot Panel */
+.history-chatbot-panel {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 350px;
+  height: 500px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.history-chatbot-header {
+  padding: 12px 16px;
+  background-color: #3b82f6;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.history-chatbot-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-chatbot-title h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.history-chatbot-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.history-chatbot-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Messages Container */
+.history-chatbot-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #f8fafc;
+}
+
+/* Message Bubbles */
+.history-chatbot-message {
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  line-height: 1.3;
+  font-size: 14px;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #3b82f6;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.assistant-message {
+  align-self: flex-start;
+  background-color: white;
+  color: #1e293b;
+  border-bottom-left-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Input Area */
+.history-chatbot-input {
+  padding: 12px 16px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 8px;
+  background-color: white;
+}
+
+.history-chatbot-input input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.history-chatbot-input input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.history-chatbot-input button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.history-chatbot-input button:hover {
+  background-color: #2563eb;
+}
+
+.history-chatbot-input button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background-color: #94a3b8;
+  border-radius: 50%;
+  display: inline-block;
+  animation: typing 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Message Content Formatting */
+.message-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.message-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.assistant-message .message-content a {
+  color: #2563eb;
+}
+
+.user-message .message-content a {
+  color: #e2e8f0;
+}
+
+/* Markdown Styling */
+/* Compact Markdown */
+.compact-markdown {
+  line-height: 1.3;
+}
+
+.compact-markdown * {
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+}
+
+/* Paragraph styling */
+.md-p {
+  margin: 0.2rem 0;
+}
+
+/* Headings */
+.md-h1, .md-h2, .md-h3 {
+  margin-top: 0.4rem;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.md-h1 {
+  font-size: 1.2rem;
+}
+
+.md-h2 {
+  font-size: 1.1rem;
+}
+
+.md-h3 {
+  font-size: 1rem;
+}
+
+/* Lists */
+.md-ul, .md-ol {
+  padding-left: 1.25rem;
+  margin: 0.25rem 0;
+}
+
+.md-li {
+  margin-bottom: 0.125rem;
+}
+
+/* Code */
+.md-inline-code {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.85em;
+}
+
+.md-block-code {
+  display: block;
+  overflow-x: auto;
+  padding: 0.35rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85em;
+  white-space: pre;
+}
+
+.md-pre {
+  margin: 0.25rem 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Blockquotes */
+.md-blockquote {
+  border-left: 3px solid #3b82f6;
+  padding-left: 0.5rem;
+  margin: 0.25rem 0;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Tables */
+.md-table-wrapper {
+  overflow-x: auto;
+  margin: 0.25rem 0;
+}
+
+.md-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.85em;
+}
+
+.md-table th, .md-table td {
+  border: 1px solid #e2e8f0;
+  padding: 0.2rem 0.4rem;
+  text-align: left;
+}
+
+.md-table th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+}
+
+/* Images */
+.md-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.25rem 0;
+}
+
+/* First paragraph in message should have no top margin */
+.message-content > p:first-child {
+  margin-top: 0;
+}
+
+/* Last paragraph in message should have no bottom margin */
+.message-content > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Links */
+.md-link {
+  color: #2563eb;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .history-chatbot-panel {
+    width: calc(100% - 40px);
+    height: 60vh;
+    bottom: 80px;
+  }
+} 

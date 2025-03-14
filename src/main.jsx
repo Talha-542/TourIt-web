@@ -13,57 +13,73 @@ import AboutUs from "./aboutUs";
 import ContactUs from "./contactUs";
 import { CookiePolicy, PrivacyPolicy, TermsOfService } from "./policies";
 import TodoList from './components/TodoList';
+import HistoryChatbot from './components/HistoryChatbot';
+import { HistoryChatbotProvider } from './components/HistoryChatbot/HistoryChatbotContext';
+
+// Create a wrapper component that includes the Header, Toaster, and HistoryChatbot
+const AppWrapper = ({ children }) => (
+  <>
+    <Header />
+    <Toaster position="top-right" />
+    {children}
+    <HistoryChatbot />
+  </>
+);
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <AppWrapper><App /></AppWrapper>,
   },
   {
     path: "/create-trip",
-    element: <CreateTrip />,
+    element: <AppWrapper><CreateTrip /></AppWrapper>,
   },
-
   {
     path: "/view-trip/:tripId",
-    element: <ViewTrip/>,
+    element: <AppWrapper><ViewTrip /></AppWrapper>,
   },
   {
     path: "/view-trip/:tripId/todo",
-    element: <TodoList />,
+    element: <AppWrapper><TodoList /></AppWrapper>,
   },
   {
     path: "/my-trips",
-    element: <Mytrips/>,
+    element: <AppWrapper><Mytrips /></AppWrapper>,
   },
   {
     path: "/about",
-    element: <AboutUs/>,
+    element: <AppWrapper><AboutUs /></AppWrapper>,
   },
   {
     path: "/contact",
-    element: <ContactUs/>,
+    element: <AppWrapper><ContactUs /></AppWrapper>,
   },
   {
     path: "/terms",
-    element: <TermsOfService/>,
+    element: <AppWrapper><TermsOfService /></AppWrapper>,
   },
   {
     path: "/cookies",
-    element: <CookiePolicy/>,
+    element: <AppWrapper><CookiePolicy /></AppWrapper>,
   },
   {
     path: "/privacy",
-    element: <PrivacyPolicy/>,
+    element: <AppWrapper><PrivacyPolicy /></AppWrapper>,
   },
 ]);
 
+// Create a root component that wraps everything with the necessary providers
+const Root = () => (
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <HistoryChatbotProvider>
+      <RouterProvider router={router} />
+    </HistoryChatbotProvider>
+  </GoogleOAuthProvider>
+);
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <Header />
-      <Toaster position="top-right" />
-      <RouterProvider router={router} />
-    </GoogleOAuthProvider>
+    <Root />
   </StrictMode>
 );
