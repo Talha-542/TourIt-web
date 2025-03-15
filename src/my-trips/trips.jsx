@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../service/firebaseConfig";
 import { useState } from "react";
 import MyTripCard from "./components/MyTripCard";
 import { motion } from "framer-motion";
 import { FaPlus } from "react-icons/fa";
+import { toast } from "sonner";
 
 function Mytrips() {
   const navigate = useNavigate();
@@ -53,6 +54,17 @@ function Mytrips() {
       ));
     } catch (error) {
       console.error("Error updating note:", error);
+    }
+  };
+
+  const handleDeleteTrip = async (tripId) => {
+    try {
+      await deleteDoc(doc(db, "Trips", tripId));
+      setUserTrips(userTrips.filter(trip => trip.id !== tripId));
+      toast.success("Trip deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting trip:", error);
+      toast.error("Failed to delete trip. Please try again.");
     }
   };
 
@@ -146,6 +158,7 @@ function Mytrips() {
                       trip={trip} 
                       onNoteUpdate={handleNoteUpdate}
                       onCardClick={handleCardClick}
+                      onDeleteTrip={handleDeleteTrip}
                     />
                   </motion.div>
                 ))}

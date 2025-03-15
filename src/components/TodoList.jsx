@@ -79,9 +79,10 @@ function TodoList() {
     setHasChanges(true);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (showToast = true) => {
     try {
-      setIsLoading(true);
+      if (!hasChanges) return; // Don't save if there are no changes
+      
       const tripRef = doc(db, "Trips", tripId);
       const tripDoc = await getDoc(tripRef);
       
@@ -109,7 +110,7 @@ function TodoList() {
           updatedItinerary[dayKey].places.push({
             ...originalPlace,
             placeName: activity.name,
-            completed: activity.completed // Save the completed status
+            completed: activity.completed
           });
         });
 
@@ -121,25 +122,41 @@ function TodoList() {
         });
 
         setHasChanges(false);
-        toast.success("Changes saved successfully!");
+        
+        // Only show toast if showToast is true
+        if (showToast) {
+          toast.success("Changes saved successfully!", {
+            duration: 2000,
+          });
+        }
+        
+        // Update the original data to match current state
+        setOriginalData({
+          ...originalData,
+          itinerary: updatedItinerary
+        });
       }
     } catch (error) {
       console.error("Error saving changes:", error);
-      toast.error("Failed to save changes");
-    } finally {
-      setIsLoading(false);
+      if (showToast) {
+        toast.error("Failed to save changes");
+      }
     }
   };
 
-  // Auto-save checkbox changes after a delay
+  // Auto-save changes after a delay
   useEffect(() => {
+    let saveTimer;
+    
     if (hasChanges) {
-      const saveTimer = setTimeout(() => {
-        handleSave();
+      saveTimer = setTimeout(() => {
+        handleSave(false); // Don't show toast for auto-save
       }, 1500); // Save 1.5 seconds after the last change
-      
-      return () => clearTimeout(saveTimer);
     }
+    
+    return () => {
+      if (saveTimer) clearTimeout(saveTimer);
+    };
   }, [activities, hasChanges]);
 
   // Calculate trip stats
@@ -285,7 +302,7 @@ function TodoList() {
         >
           <div className="max-w-4xl mx-auto flex justify-end">
             <Button
-              onClick={handleSave}
+              onClick={() => handleSave(true)}
               disabled={isLoading}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2 rounded-lg shadow-sm"
             >

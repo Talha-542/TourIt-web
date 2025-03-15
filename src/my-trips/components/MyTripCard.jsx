@@ -4,14 +4,20 @@ import { GetPlaceDetails } from "@/service/GlobalApi";
 import { FaPencilAlt } from "react-icons/fa";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckSquare } from "lucide-react";
+import { CheckSquare, MoreVertical, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const PHOTO_REF_URL =
   "https://places.googleapis.com/v1/{NAME}/media?maxWidthPx=1000&maxHeightPx=1000&key=" +
   import.meta.env.VITE_GOOGLE_PLACE_API_KEY;
 
-function MyTripCard({ trip, onNoteUpdate, onCardClick }) {
+function MyTripCard({ trip, onNoteUpdate, onCardClick, onDeleteTrip }) {
   const [photoUrl, setPhotoUrl] = useState("");
   const [isNoteOpen, setIsNoteOpen] = useState(false);
   const [note, setNote] = useState(trip.note || "");
@@ -104,38 +110,74 @@ function MyTripCard({ trip, onNoteUpdate, onCardClick }) {
           )}
         </AnimatePresence>
 
-        {/* Add Todo List Button next to Note Button */}
+        {/* Action Buttons Container */}
         <div className="absolute top-4 right-4 flex gap-2">
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/view-trip/${trip.id}/todo`);
-            }}
-            className="note-button bg-white p-2 rounded-full shadow-md 
-              hover:bg-gray-100 transition-opacity duration-300
-              opacity-0 group-hover:opacity-100"
-          >
-            <CheckSquare className="text-primary h-4 w-4" />
-          </button>
-          
-          {/* Existing Note Button */}
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsNoteOpen(true);
-            }}
-            className="note-button bg-white p-2 rounded-full shadow-md 
-              hover:bg-gray-100 transition-opacity duration-300
-              opacity-0 group-hover:opacity-100"
-          >
-            <FaPencilAlt className="text-primary" />
-          </button>
+          {/* Desktop View Buttons - Hidden on Small Screens */}
+          <div className="hidden sm:flex gap-2">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/view-trip/${trip.id}/todo`);
+              }}
+              className="note-button bg-white p-2 rounded-full shadow-md 
+                hover:bg-gray-100 transition-opacity duration-300
+                opacity-0 group-hover:opacity-100"
+            >
+              <CheckSquare className="text-primary h-4 w-4" />
+            </button>
+            
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsNoteOpen(true);
+              }}
+              className="note-button bg-white p-2 rounded-full shadow-md 
+                hover:bg-gray-100 transition-opacity duration-300
+                opacity-0 group-hover:opacity-100"
+            >
+              <FaPencilAlt className="text-primary" />
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="flex flex-col mt-4">
-        <h2 className="font-semibold">{tripData?.location || "No location available"}</h2>
-        <h2 className="text-sm text-gray-600">{tripData?.duration} with {tripData?.budget} budget</h2>
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="font-semibold">{tripData?.location || "No location available"}</h2>
+            <h2 className="text-sm text-gray-600">{tripData?.duration} with {tripData?.budget} budget</h2>
+          </div>
+          
+          {/* More Options Menu - Always Visible */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <button className="note-button p-1 rounded-full hover:bg-gray-100">
+                <MoreVertical className="h-5 w-5 text-gray-600" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48" onClick={(e) => e.stopPropagation()}>
+              {/* Mobile View Options - Shown only on Small Screens */}
+              <div className="block sm:hidden">
+                <DropdownMenuItem onClick={() => navigate(`/view-trip/${trip.id}/todo`)}>
+                  <CheckSquare className="mr-2 h-4 w-4" />
+                  <span>Todo List</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsNoteOpen(true)}>
+                  <FaPencilAlt className="mr-2 h-4 w-4" />
+                  <span>Add Note</span>
+                </DropdownMenuItem>
+              </div>
+              {/* Delete Option - Always Visible */}
+              <DropdownMenuItem 
+                className="text-red-600 focus:text-red-600" 
+                onClick={() => onDeleteTrip(trip.id)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>Delete Trip</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <Dialog open={isNoteOpen} onOpenChange={setIsNoteOpen}>
@@ -186,6 +228,7 @@ MyTripCard.propTypes = {
   }).isRequired,
   onNoteUpdate: PropTypes.func.isRequired,
   onCardClick: PropTypes.func.isRequired,
+  onDeleteTrip: PropTypes.func.isRequired,
 };
 
 export default MyTripCard;
