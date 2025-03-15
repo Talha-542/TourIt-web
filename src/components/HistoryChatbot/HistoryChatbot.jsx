@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FaTimes, FaPaperPlane } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
@@ -40,29 +41,35 @@ const MarkdownRenderer = ({ children }) => {
         remarkPlugins={[remarkGfm]}
         components={{
           // Make headings smaller
-          h1: ({ node, ...props }) => <h3 className="md-h1" {...props} />,
-          h2: ({ node, ...props }) => <h4 className="md-h2" {...props} />,
-          h3: ({ node, ...props }) => <h5 className="md-h3" {...props} />,
+          h1: (props) => <h3 className="md-h1" {...props} />,
+          h2: (props) => <h4 className="md-h2" {...props} />,
+          h3: (props) => <h5 className="md-h3" {...props} />,
           // Style links
-          a: ({ node, ...props }) => <a className="md-link" target="_blank" rel="noopener noreferrer" {...props} />,
+          a: (props) => <a className="md-link" target="_blank" rel="noopener noreferrer" {...props} />,
           // Style lists
-          ul: ({ node, ...props }) => <ul className="md-ul" {...props} />,
-          ol: ({ node, ...props }) => <ol className="md-ol" {...props} />,
-          li: ({ node, ...props }) => <li className="md-li" {...props} />,
+          ul: (props) => <ul className="md-ul" {...props} />,
+          ol: (props) => <ol className="md-ol" {...props} />,
+          li: (props) => <li className="md-li" {...props} />,
           // Style code blocks
-          code: ({ node, inline, ...props }) => 
+          code: ({ inline, ...props }) => 
             inline ? 
               <code className="md-inline-code" {...props} /> : 
               <code className="md-block-code" {...props} />,
-          pre: ({ node, ...props }) => <pre className="md-pre" {...props} />,
+          pre: (props) => <pre className="md-pre" {...props} />,
           // Style blockquotes
-          blockquote: ({ node, ...props }) => <blockquote className="md-blockquote" {...props} />,
+          blockquote: (props) => <blockquote className="md-blockquote" {...props} />,
           // Style tables
-          table: ({ node, ...props }) => <div className="md-table-wrapper"><table className="md-table" {...props} /></div>,
+          table: (props) => <div className="md-table-wrapper"><table className="md-table" {...props} /></div>,
           // Style images to fit in the chat
-          img: ({ node, ...props }) => <img className="md-img" {...props} alt={props.alt || 'Image'} />,
+          img: ({ alt, ...props }) => {
+            const ImgComponent = ({ alt, ...rest }) => <img className="md-img" alt={alt} {...rest} />;
+            ImgComponent.propTypes = {
+              alt: PropTypes.string
+            };
+            return <ImgComponent alt={alt || 'Image'} {...props} />;
+          },
           // Reduce paragraph spacing
-          p: ({ node, ...props }) => <p className="md-p" {...props} />,
+          p: (props) => <p className="md-p" {...props} />,
         }}
       >
         {children}
@@ -71,14 +78,49 @@ const MarkdownRenderer = ({ children }) => {
   );
 };
 
+MarkdownRenderer.propTypes = {
+  children: PropTypes.node.isRequired
+};
+
+const StreamingText = ({ text }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timer = setTimeout(() => {
+        setDisplayedText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+        scrollToBottom();
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, text]);
+
+  return (
+    <>
+      <MarkdownRenderer>{displayedText}</MarkdownRenderer>
+      <div ref={messagesEndRef} />
+    </>
+  );
+};
+
+StreamingText.propTypes = {
+  text: PropTypes.string.isRequired
+};
+
 const HistoryChatbot = () => {
-  const { isOpen, toggleChatbot, closeChatbot, currentLocation, tripData } = useHistoryChatbot();
+  const { isOpen, toggleChatbot, closeChatbot, currentLocation } = useHistoryChatbot();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [chatSession, setChatSession] = useState(null);
   const [showSignupDialog, setShowSignupDialog] = useState(false);
-  const messagesEndRef = useRef(null);
   const [user, setUser] = useState(null);
   
   // Get user data from localStorage only once on component mount
@@ -99,13 +141,6 @@ const HistoryChatbot = () => {
       initChatSession();
     }
   }, [user, currentLocation, chatSession]);
-
-  // Scroll to bottom of messages
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
 
   const initChatSession = async () => {
     // Only initialize if we don't already have a session
@@ -175,7 +210,6 @@ const HistoryChatbot = () => {
     setIsLoading(true);
     
     try {
-      // If we have trip data and location, add it to the context
       let contextualizedMessage = userMessage;
       if (currentLocation && !userMessage.toLowerCase().includes(currentLocation.toLowerCase())) {
         contextualizedMessage = `For the location ${currentLocation}: ${userMessage}`;
@@ -184,16 +218,16 @@ const HistoryChatbot = () => {
       const result = await chatSession.sendMessage(contextualizedMessage);
       const response = await result.response.text();
       
-      // Add assistant response to chat
-      setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+      // Add assistant response to chat with isStreaming flag
+      setMessages(prev => [...prev, { role: 'assistant', content: response, isStreaming: true }]);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Failed to get a response. Please try again.");
       
-      // Add error message to chat
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "I'm sorry, I encountered an error processing your request. Please try again." 
+        content: "I'm sorry, I encountered an error processing your request. Please try again.",
+        isStreaming: false
       }]);
     } finally {
       setIsLoading(false);
@@ -251,6 +285,8 @@ const HistoryChatbot = () => {
                 <div className="message-content">
                   {message.role === 'user' ? (
                     message.content
+                  ) : message.isStreaming ? (
+                    <StreamingText text={message.content} />
                   ) : (
                     <MarkdownRenderer>{message.content}</MarkdownRenderer>
                   )}
@@ -266,7 +302,6 @@ const HistoryChatbot = () => {
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
           </div>
 
           <div className="history-chatbot-input">
@@ -299,7 +334,7 @@ const HistoryChatbot = () => {
                 <HistoryChatbotIcon size={48} color="#3b82f6" />
               </div>
               <p className="text-lg mb-6">
-                Please sign in to use the History Travel Guide chatbot and explore the rich history and culture of your destinations.
+                Please sign in to use Tourly your personal travel guide chatbot and explore the rich history and culture of your destinations.
               </p>
               <Button
                 onClick={() => {
@@ -319,4 +354,4 @@ const HistoryChatbot = () => {
   );
 };
 
-export default HistoryChatbot; 
+export default HistoryChatbot;

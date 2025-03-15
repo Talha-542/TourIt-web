@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '@/service/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
+import PropTypes from 'prop-types';
+
 
 // Create context
 const HistoryChatbotContext = createContext();
@@ -75,7 +77,7 @@ export const HistoryChatbotProvider = ({ children }) => {
         if (typeof data === 'string') {
           try {
             parsedData = JSON.parse(data);
-          } catch (e) {
+          } catch  {
             // If it's not valid JSON, use the string as is
             parsedData = { location: data };
           }
@@ -145,6 +147,10 @@ export const HistoryChatbotProvider = ({ children }) => {
       {children}
     </HistoryChatbotContext.Provider>
   );
+};
+
+HistoryChatbotProvider.propTypes = {
+  children: PropTypes.node.isRequired
 };
 
 export default HistoryChatbotContext;
