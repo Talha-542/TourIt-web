@@ -16,7 +16,10 @@ import {
 const PHOTO_REF_URL =
   "https://places.googleapis.com/v1/{NAME}/media?maxWidthPx=1000&maxHeightPx=1000&key=" +
   import.meta.env.VITE_GOOGLE_PLACE_API_KEY;
-
+  
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+  };
 function MyTripCard({ trip, onNoteUpdate, onCardClick, onDeleteTrip }) {
   const [photoUrl, setPhotoUrl] = useState("");
   const [isNoteOpen, setIsNoteOpen] = useState(false);
@@ -72,8 +75,11 @@ function MyTripCard({ trip, onNoteUpdate, onCardClick, onDeleteTrip }) {
 
   return (
     <div 
-      className="relative flex flex-col hover:scale-105 transition-all duration-300 cursor-pointer group"
-      onClick={handleCardContentClick}
+      className="relative flex flex-col  transition-all duration-300 cursor-pointer group"
+      onClick={(e) => {
+        handleCardContentClick(e);
+        scrollToTop();
+      }}
     >
       <div className="relative">
         <img
@@ -151,7 +157,7 @@ function MyTripCard({ trip, onNoteUpdate, onCardClick, onDeleteTrip }) {
           {/* More Options Menu - Always Visible */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <button className="note-button p-1 rounded-full hover:bg-gray-100">
+              <button className="note-button p-1 rounded-full bg-white hover:bg-gray-100">
                 <MoreVertical className="h-5 w-5 text-gray-600" />
               </button>
             </DropdownMenuTrigger>

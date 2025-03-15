@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 
 export const Header = () => {
   const users = JSON.parse(localStorage.getItem("user"));
@@ -65,6 +66,7 @@ export const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 bg-white z-50 border-b">
       <div className="max-w-7xl mx-auto p-2 flex justify-between items-center">
+        <Link to="/">
         <div className="flex items-center gap-2">
           <img
             src="/src/components/ui/custom/logo.png"
@@ -73,6 +75,7 @@ export const Header = () => {
           />
           <span className="text-2xl font-extrabold text-primary">Tour It</span>
         </div>
+        </Link>
 
         <div>
           {users ? (
