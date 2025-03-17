@@ -8,88 +8,137 @@ function Intro() {
   const [refHotels, inViewHotels] = useInView({ triggerOnce: true });
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-10 my-10 px-6 md:px-20">
-      {/* Left Section: Image */}
-      <div className="relative w-full md:w-1/4 flex justify-center mt-10">
-        <img
-          src={solotraveler}
-          alt="Solo Traveler"
-          className="rounded-lg w-full max-w-md md:max-w-full h-auto"
-        />
-      </div>
-
-      {/* Right Section: Content */}
-      <div className="flex flex-col md:w-1/2 text-center md:text-left">
-        <h2 className="font-extrabold text-3xl sm:text-4xl md:text-5xl leading-tight text-gray-800">
-          Travel Any Corner of <br /> The World With Us
-        </h2>
-        <p className="mt-6 text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed">
-          Would you explore nature paradise in the world? Let’s find the best
-          destinations with us. Experience unmatched beauty and adventure like
-          never before.
-        </p>
-        <p className="mt-4 text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed">
-          Plan your journey with the best travel guide to make it truly
-          unforgettable.
-        </p>
-
-        {/* Card Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          {/* Destinations */}
-          <div
-            ref={refDestinations}
-            className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center"
-          >
-            {inViewDestinations && (
-              <>
-                <CountUp
-                  start={0}
-                  end={300}
-                  duration={4}
-                  className="font-bold text-xl sm:text-2xl text-blue-500"
-                />
-                <span className="font-bold text-xl sm:text-2xl text-blue-500">+</span>
-              </>
-            )}
-            <p className="text-gray-500 text-sm sm:text-base">DESTINATIONS</p>
+    <div className="bg-gradient-to-b from-gray-50 to-white py-20">
+      <div className="container mx-auto px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
+          {/* Left Section: Image */}
+          <div className="lg:w-1/2">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-blue-400/20 rounded-2xl blur-xl"></div>
+              <img
+                src={solotraveler}
+                alt="Solo Traveler"
+                className="relative rounded-2xl w-full object-cover shadow-xl transform transition-transform duration-500 hover:scale-105"
+              />
+            </div>
           </div>
 
-          {/* Tourists */}
-          <div
-            ref={refTourists}
-            className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center"
-          >
-            {inViewTourists && (
-              <>
-                <CountUp
-                  start={3500}
-                  end={5000}
-                  duration={4}
-                  className="font-bold text-xl sm:text-2xl text-blue-500"
-                />
-                <span className="font-bold text-xl sm:text-2xl text-blue-500">+</span>
-              </>
-            )}
-            <p className="text-gray-500 text-sm sm:text-base">TOURISTS</p>
-          </div>
+          {/* Right Section: Content */}
+          <div className="lg:w-1/2 space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+                Explore Any Corner of{" "}
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">
+                  The World
+                </span>{" "}
+                With Us
+              </h2>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                Discover nature&apos;s paradise and find the best destinations with our AI-powered
+                travel guide. Experience unmatched beauty and create unforgettable memories
+                on your journey.
+              </p>
+            </div>
 
-          {/* Hotels */}
-          <div
-            ref={refHotels}
-            className="bg-white p-4 md:p-6 rounded-lg shadow-md text-center"
-          >
-            {inViewHotels && (
-              <>
-                <CountUp
-                  start={0}
-                  end={150}
-                  duration={4}
-                  className="font-bold text-xl sm:text-2xl text-blue-500"
-                />
-                <span className="font-bold text-xl sm:text-2xl text-blue-500">+</span>
-              </>
-            )}
-            <p className="text-gray-500 text-sm sm:text-base">HOTELS</p>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {/* Destinations Card */}
+              <div
+                ref={refDestinations}
+                className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="space-y-2 text-center">
+                  <div className="text-primary text-3xl font-bold">
+                    {inViewDestinations && (
+                      <>
+                        <CountUp
+                          start={0}
+                          end={300}
+                          duration={2.5}
+                          separator=","
+                        />
+                        <span>+</span>
+                      </>
+                    )}
+                  </div>
+                  <p className="text-gray-600 font-medium">Destinations</p>
+                </div>
+              </div>
+
+              {/* Tourists Card */}
+              <div
+                ref={refTourists}
+                className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="space-y-2 text-center">
+                  <div className="text-primary text-3xl font-bold">
+                    {inViewTourists && (
+                      <>
+                        <CountUp
+                          start={3500}
+                          end={5000}
+                          duration={2.5}
+                          separator=","
+                        />
+                        <span>+</span>
+                      </>
+                    )}
+                  </div>
+                  <p className="text-gray-600 font-medium">Happy Travelers</p>
+                </div>
+              </div>
+
+              {/* Hotels Card */}
+              <div
+                ref={refHotels}
+                className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="space-y-2 text-center">
+                  <div className="text-primary text-3xl font-bold">
+                    {inViewHotels && (
+                      <>
+                        <CountUp
+                          start={0}
+                          end={150}
+                          duration={2.5}
+                          separator=","
+                        />
+                        <span>+</span>
+                      </>
+                    )}
+                  </div>
+                  <p className="text-gray-600 font-medium">Premium Hotels</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Features List */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-primary text-xl">🎯</span>
+                </div>
+                <span className="text-gray-700">Personalized Itineraries</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-primary text-xl">💎</span>
+                </div>
+                <span className="text-gray-700">Premium Experiences</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-primary text-xl">🤖</span>
+                </div>
+                <span className="text-gray-700">AI-Powered Planning</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-primary text-xl">💰</span>
+                </div>
+                <span className="text-gray-700">Budget-Friendly Options</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

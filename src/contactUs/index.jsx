@@ -295,7 +295,7 @@ function ContactUs() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-6 bg-gray-50">
+      <section  className="py-20 px-6 bg-gray-50">
         <div className="max-w-5xl mx-auto text-center mb-12">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
