@@ -15,21 +15,23 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  // DialogTrigger,
 } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 
 export const Header = () => {
   const users = JSON.parse(localStorage.getItem("user"));
   
- const handleLogout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("user");
     window.location.reload();
   };
+  
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     console.log(users);
   }, [users]);
+  
   const login = useGoogleLogin({
     onSuccess: (response) => {
       GetUserProfile(response);
@@ -55,7 +57,6 @@ export const Header = () => {
         console.log(resp);
         localStorage.setItem("user", JSON.stringify(resp.data));
         setOpenDialog(false);
-
       })
       .catch((error) => {
         console.error("Error fetching user profile:", error);
@@ -65,6 +66,7 @@ export const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 bg-white z-50 border-b">
       <div className="max-w-7xl mx-auto p-2 flex justify-between items-center">
+        <Link to="/">
         <div className="flex items-center gap-2">
           <img
             src="/src/components/ui/custom/logo.png"
@@ -73,20 +75,25 @@ export const Header = () => {
           />
           <span className="text-2xl font-extrabold text-primary">Tour It</span>
         </div>
+        </Link>
 
         <div>
           {users ? (
             <div className="flex items-center gap-4">
-               <a href="/create-trip" className="text-black">
-              <Button variant="outline" className="rounded-full hover:bg-primary/10">
-                + Create Trip
-              </Button>
-             </a>
-             <a href="/my-trips" className="text-black">
-              <Button variant="outline" className="rounded-full hover:bg-primary/10">
-                My trips
-              </Button>
-             </a>
+              {/* Show buttons only on medium screens and larger */}
+              <div className="hidden md:flex items-center gap-4">
+                <a href="/create-trip" className="text-black">
+                  <Button variant="outline" className="rounded-full hover:bg-primary/10">
+                    + Create Trip
+                  </Button>
+                </a>
+                <a href="/my-trips" className="text-black">
+                  <Button variant="outline" className="rounded-full hover:bg-primary/10">
+                    My trips
+                  </Button>
+                </a>
+              </div>
+              
               <Popover>
                 <PopoverTrigger className="rounded-full p-0 hover:ring-2 hover:ring-primary/20 transition-all">
                   <img
@@ -95,8 +102,22 @@ export const Header = () => {
                     className="w-9 h-9 rounded-full object-cover"
                   />
                 </PopoverTrigger>
-                <PopoverContent className="w-48">
+                <PopoverContent className="w-56">
                   <div className="flex flex-col gap-2 p-2">
+                    {/* Show buttons only on small screens */}
+                    <div className="md:hidden space-y-2 mb-2">
+                      <a href="/create-trip" className="block w-full">
+                        <Button variant="outline" className="w-full justify-start">
+                          + Create Trip
+                        </Button>
+                      </a>
+                      <a href="/my-trips" className="block w-full">
+                        <Button variant="outline" className="w-full justify-start">
+                          My trips
+                        </Button>
+                      </a>
+                      <div className="border-t my-2"></div>
+                    </div>
                     <Button onClick={handleLogout} variant="ghost" className="w-full justify-start">
                       Logout
                     </Button>
