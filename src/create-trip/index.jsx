@@ -9,11 +9,14 @@ import {
 } from "@/constants/options";
 import { chatSession } from "@/service/AIModal";
 import { useEffect, useState } from "react";
-import { FaPlaneDeparture, FaCalendarAlt, FaUsers, FaHeart } from "react-icons/fa";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { db } from "@/service/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FaPlaneDeparture, FaCalendarAlt, FaUsers, FaHeart } from "react-icons/fa";
 import { FaMoneyBills, FaBowlFood } from "react-icons/fa6";
 import { toast } from "sonner";
 import {
@@ -24,9 +27,6 @@ import {
   DialogTitle,
   // DialogTrigger,
 } from "@/components/ui/dialog";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 function CreateTrip() {
   const [formData, setFormData] = useState({});
