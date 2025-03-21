@@ -4,10 +4,12 @@ import {
   SelectBudgetOptions,
   SelectTravelList,
   SelectFoodOptions,
-  AI_PROMPT,
   SelectInterestOptions,
+  SelectTripTypes,
+  SelectHealthcareSpecialties,
+  SelectEducationalFields,
 } from "@/constants/options";
-import { chatSession } from "@/service/AIModal";
+import { chatSession, TRAVEL_PROMPT, HEALTHCARE_PROMPT, EDUCATION_PROMPT } from "@/service/AIModal";
 import { useEffect, useState } from "react";
 import { db } from "@/service/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
@@ -18,6 +20,7 @@ import { FcGoogle } from "react-icons/fc";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FaPlaneDeparture, FaCalendarAlt, FaUsers, FaHeart } from "react-icons/fa";
 import { FaMoneyBills, FaBowlFood } from "react-icons/fa6";
+import { MdHealthAndSafety, MdSchool, MdTravelExplore } from "react-icons/md";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -25,15 +28,19 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  // DialogTrigger,
 } from "@/components/ui/dialog";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function CreateTrip() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    tripType: '', // Default to tourism
+  });
   const [place, setPlace] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
+  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
+  const [selectedEducationFields, setSelectedEducationFields] = useState([]);
   const [formProgress, setFormProgress] = useState(0);
 
   const router = useNavigate();
@@ -43,36 +50,40 @@ function CreateTrip() {
       toast.error("Please enter a duration of 20 days or less.");
       return;
     }
-    
+
     const newFormData = {
       ...formData,
       [name]: value,
     };
-    
+
     setFormData(newFormData);
-    
+
     // Calculate form progress
     calculateFormProgress(newFormData);
   };
-  
+
   const calculateFormProgress = (data) => {
-    const requiredFields = ["location", "NoOfDays", "budget", "traveler"];
+    const requiredFields = ["location", "NoOfDays", "budget", "traveler", "tripType"];
     const filledFields = requiredFields.filter(field => data[field]);
     setFormProgress((filledFields.length / requiredFields.length) * 100);
   };
 
-  const toggleInterest = (interest) => {
-    setSelectedInterests(prev => {
-      const isSelected = prev.includes(interest);
-      const newInterests = isSelected 
-        ? prev.filter(i => i !== interest)
-        : [...prev, interest];
-      
-      // Update formData with interests
-      handleInputChange("interests", newInterests);
-      return newInterests;
+  const toggleItem = (item, stateSetter, stateGetter, formField) => {
+    stateSetter(prev => {
+      const isSelected = prev.includes(item);
+      const newItems = isSelected
+        ? prev.filter(i => i !== item)
+        : [...prev, item];
+
+      // Update formData
+      handleInputChange(formField, newItems);
+      return newItems;
     });
   };
+
+  const toggleInterest = (interest) => toggleItem(interest, setSelectedInterests, selectedInterests, "interests");
+  const toggleSpecialty = (specialty) => toggleItem(specialty, setSelectedSpecialties, selectedSpecialties, "specialties");
+  const toggleEducationField = (field) => toggleItem(field, setSelectedEducationFields, selectedEducationFields, "educationFields");
 
   useEffect(() => {
     calculateFormProgress(formData);
@@ -94,37 +105,59 @@ function CreateTrip() {
       setOpenDialog(true);
       return;
     }
-    
-    if (!formData?.location || !formData?.NoOfDays || !formData?.budget || !formData?.traveler) {
+
+    if (!formData?.location || !formData?.NoOfDays || !formData?.budget || !formData?.traveler || !formData?.tripType) {
       toast.error("Please fill in all required fields to generate your trip.");
       return;
     }
-    
+
     if (formData?.NoOfDays > 20) {
       toast.error("Please enter a duration of 20 days or less.");
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
-      // Format interests as a string if they exist
-      const interestsString = formData?.interests && formData.interests.length > 0 
-        ? ` with interests in ${formData.interests.join(', ')}` 
-        : '';
-      
-      const FINAL_PROMPT = AI_PROMPT.replace(
-        "{location}",
-        formData?.location
-      )
+      let promptTemplate;
+      let additionalParams = '';
+
+      // Choose prompt based on trip type
+      switch (formData.tripType) {
+        case 'healthcare':
+          promptTemplate = HEALTHCARE_PROMPT;
+          if (formData?.specialties && formData.specialties.length > 0) {
+            additionalParams = ` with focus on ${formData.specialties.join(', ')}`;
+          }
+          break;
+        case 'education':
+          promptTemplate = EDUCATION_PROMPT;
+          if (formData?.educationFields && formData.educationFields.length > 0) {
+            additionalParams = ` with focus on ${formData.educationFields.join(', ')}`;
+          }
+          break;
+        default: // tourism
+          promptTemplate = TRAVEL_PROMPT;
+          if (formData?.interests && formData.interests.length > 0) {
+            additionalParams = ` with interests in ${formData.interests.join(', ')}`;
+          }
+          if (formData?.food) {
+            additionalParams += `, preferring ${formData.food}`;
+          }
+          break;
+      }
+
+      const FINAL_PROMPT = promptTemplate
+        .replace("{location}", formData?.location)
         .replace(/\{totalDays\}/g, formData?.NoOfDays)
         .replace("{traveler}", formData?.traveler)
-        .replace("{budget}", formData?.budget) + interestsString;
+        .replace("{budget}", formData?.budget) + additionalParams;
 
+      console.log(FINAL_PROMPT)
       const result = await chatSession.sendMessage(FINAL_PROMPT);
       saveTrips(result?.response?.text());
-      
-      toast.success("Your trip has been successfully generated!");
+
+      toast.success(`Your ${formData.tripType} plan has been successfully generated!`);
     } catch (error) {
       console.error("Error generating trip:", error);
       toast.error("Something went wrong. Please try again.");
@@ -167,11 +200,35 @@ function CreateTrip() {
         id: docId,
         createdAt: new Date().toISOString(),
       });
-      
+
       router("/view-trip/" + docId);
     } catch (error) {
       console.error("Error saving trip:", error);
       toast.error("Failed to save your trip. Please try again.");
+    }
+  };
+
+  // Get icon based on trip type
+  const getTripTypeIcon = () => {
+    switch (formData.tripType) {
+      case 'healthcare':
+        return <MdHealthAndSafety className="text-xl text-primary" />;
+      case 'education':
+        return <MdSchool className="text-xl text-primary" />;
+      default:
+        return <MdTravelExplore className="text-xl text-primary" />;
+    }
+  };
+
+  // Get title based on trip type
+  const getTripTypeTitle = () => {
+    switch (formData.tripType) {
+      case 'healthcare':
+        return "Plan Your Medical Visit";
+      case 'education':
+        return "Explore Educational Opportunities";
+      default:
+        return "Plan Your Dream Getaway";
     }
   };
 
@@ -180,31 +237,58 @@ function CreateTrip() {
       {/* Header with progress bar */}
       <div className="mb-10">
         <h1 className="font-bold text-5xl text-primary bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-          Plan Your Dream Getaway ✈️
+          {getTripTypeTitle()} ✈️
         </h1>
         <p className="mt-4 text-secondary text-lg leading-relaxed max-w-3xl">
-          Answer a few simple questions, and we&apos;ll craft a personalized travel
-          itinerary tailored just for you. Your adventure starts here!
+          Answer a few simple questions, and we&apos;ll craft a personalized itinerary
+          tailored just for you. Your journey starts here!
         </p>
-        
+
         <div className="mt-6 bg-gray-100 h-2 rounded-full overflow-hidden">
-          <div 
+          <div
             className="h-full bg-primary transition-all duration-500 ease-out rounded-full"
             style={{ width: `${formProgress}%` }}
           ></div>
         </div>
         <p className="text-sm text-gray-500 mt-2">
-          {formProgress < 100 ? 
-            `Complete the form (${Math.round(formProgress)}% done)` : 
-            "Ready to generate your trip! 🎉"}
+          {formProgress < 100 ?
+            `Complete the form (${Math.round(formProgress)}% done)` :
+            "Ready to generate your plan! 🎉"}
         </p>
+      </div>
+
+      {/* Trip Type Selection */}
+      <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 mb-16">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">What type of trip are you planning?</h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {SelectTripTypes.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => handleInputChange("tripType", item.type)}
+              className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl ${formData?.tripType === item.type
+                  ? "border-primary bg-primary/5 shadow-lg shadow-primary/10 transform -translate-y-1"
+                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+            >
+              <div className="text-5xl mb-4">{item.icon}</div>
+              <h3 className={`font-bold text-xl mb-2 ${formData?.tripType === item.type ? "text-primary" : "text-gray-800"
+                }`}>
+                {item.title}
+              </h3>
+              <p className="text-gray-600">
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-16">
         {/* Destination & Duration Section */}
         <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Basic Trip Details</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-xl font-medium text-primary">
@@ -221,8 +305,8 @@ function CreateTrip() {
                   setPlace(value);
                   handleInputChange("location", value);
                 }}
-                placeholder="Enter a destination (e.g., Paris, Tokyo, Bali)"
-                className="py-6 px-4 text-lg"
+                placeholder="Enter your destination..."
+                className="h-12 text-lg"
               />
             </div>
 
@@ -231,205 +315,249 @@ function CreateTrip() {
                 <div className="p-3 bg-blue-50 rounded-full">
                   <FaCalendarAlt className="text-xl text-primary" />
                 </div>
-                <span>How long will you stay?</span>
+                <span>How many days?</span>
               </div>
               <Input
-                placeholder="Number of days (max 20)"
                 type="number"
+                value={formData?.NoOfDays || ""}
+                onChange={(e) => handleInputChange("NoOfDays", parseInt(e.target.value))}
+                placeholder="Number of days (max 20)"
                 min="1"
                 max="20"
-                value={formData.NoOfDays || ""}
-                onChange={(e) => handleInputChange("NoOfDays", e.target.value)}
-                className="py-6 px-4 text-lg"
+                className="h-12 text-lg"
               />
             </div>
           </div>
         </div>
 
-        {/* Budget Selection */}
+        {/* Travelers & Budget Section */}
         <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-          <div className="flex items-center gap-2 text-2xl font-bold text-gray-800 mb-6">
-            <div className="p-3 bg-blue-50 rounded-full">
-              <FaMoneyBills className="text-xl text-primary" />
-            </div>
-            <span>What&apos;s your budget range?</span>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {SelectBudgetOptions.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleInputChange("budget", item.title)}
-                className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl ${
-                  formData?.budget === item.title
-                    ? "border-primary bg-primary/5 shadow-lg shadow-primary/10 transform -translate-y-1"
-                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                <div className="text-5xl mb-4">{item.icon}</div>
-                <h3 className={`font-bold text-xl mb-2 ${
-                  formData?.budget === item.title ? "text-primary" : "text-gray-800"
-                }`}>
-                  {item.title}
-                </h3>
-                <p className="text-gray-600">
-                  {item.desc}
-                </p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Travelers & Budget</h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Travelers selection */}
+            <div>
+              <div className="flex items-center gap-2 text-xl font-medium text-primary mb-6">
+                <div className="p-3 bg-blue-50 rounded-full">
+                  <FaUsers className="text-xl text-primary" />
+                </div>
+                <span>Who's traveling?</span>
               </div>
-            ))}
+
+              <div className="grid grid-cols-2 gap-4">
+                {SelectTravelList.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleInputChange("traveler", item.people)}
+                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${formData?.traveler === item.people
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200 hover:border-gray-300"
+                      }`}
+                  >
+                    <div className="text-3xl mb-2">{item.icon}</div>
+                    <h3 className="font-bold">{item.title}</h3>
+                    <p className="text-sm text-gray-600">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Budget selection */}
+            <div>
+              <div className="flex items-center gap-2 text-xl font-medium text-primary mb-6">
+                <div className="p-3 bg-blue-50 rounded-full">
+                  <FaMoneyBills className="text-xl text-primary" />
+                </div>
+                <span>What's your budget?</span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                {SelectBudgetOptions.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleInputChange("budget", item.title)}
+                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${formData?.budget === item.title
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200 hover:border-gray-300"
+                      }`}
+                  >
+                    <div className="text-3xl mb-2">{item.icon}</div>
+                    <h3 className="font-bold">{item.title}</h3>
+                    <p className="text-sm text-gray-600">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Travel Companions */}
-        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-          <div className="flex items-center gap-2 text-2xl font-bold text-gray-800 mb-6">
-            <div className="p-3 bg-blue-50 rounded-full">
-              <FaUsers className="text-xl text-primary" />
-            </div>
-            <span>Whos coming with you?</span>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {SelectTravelList.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleInputChange("traveler", item.people)}
-                className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl ${
-                  formData?.traveler === item.people
-                    ? "border-primary bg-primary/5 shadow-lg shadow-primary/10 transform -translate-y-1"
-                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                <div className="text-5xl mb-4">{item.icon}</div>
-                <h3 className={`font-bold text-xl mb-2 ${
-                  formData?.traveler === item.people ? "text-primary" : "text-gray-800"
-                }`}>
-                  {item.title}
-                </h3>
-                <p className="text-gray-600">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Trip Type Specific Options */}
+        {formData.tripType === 'tourism' && (
+          <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Tourism Preferences</h2>
 
+            <div className="space-y-10">
+              {/* Food preferences */}
+              <div>
+                <div className="flex items-center gap-2 text-xl font-medium text-primary mb-6">
+                  <div className="p-3 bg-blue-50 rounded-full">
+                    <FaBowlFood className="text-xl text-primary" />
+                  </div>
+                  <span>Food preferences?</span>
+                </div>
 
-        {/* Food Selection */}
-<div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-          <div className="flex items-center gap-2 text-2xl font-bold text-gray-800 mb-6">
-            <div className="p-3 bg-blue-50 rounded-full">
-              <FaBowlFood className="text-xl text-primary" />
-            </div>
-            <span>What type of Food you like?</span>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {SelectFoodOptions.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleInputChange("food", item.title)}
-                className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl ${
-                  formData?.food === item.title
-                    ? "border-primary bg-primary/5 shadow-lg shadow-primary/10 transform -translate-y-1"
-                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                <div className="text-5xl mb-4">{item.icon}</div>
-                <h3 className={`font-bold text-xl mb-2 ${
-                  formData?.budget === item.title ? "text-primary" : "text-gray-800"
-                }`}>
-                  {item.title}
-                </h3>
-                <p className="text-gray-600">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Interests */}
-        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-          <div className="flex items-center gap-2 text-2xl font-bold text-gray-800 mb-6">
-            <div className="p-3 bg-blue-50 rounded-full">
-              <FaHeart className="text-xl text-primary" />
-            </div>
-            <span>What are your interests?</span>
-            <span className="text-sm ml-auto font-normal text-gray-500">Select multiple</span>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {SelectInterestOptions.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => toggleInterest(item.title)}
-                className={`p-4 rounded-xl border cursor-pointer transition-all duration-300 ease-in-out ${
-                  selectedInterests.includes(item.title)
-                    ? "border-primary bg-primary/5 shadow-lg shadow-primary/10 transform -translate-y-1"
-                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                <div className="flex flex-col items-center text-center gap-2">
-                  <div className="text-3xl">{item.icon}</div>
-                  <h3 className={`font-medium text-base ${
-                    selectedInterests.includes(item.title) ? "text-primary" : "text-gray-800"
-                  }`}>
-                    {item.title}
-                  </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {SelectFoodOptions.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => handleInputChange("food", item.title)}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${formData?.food === item.title
+                          ? "border-primary bg-primary/5"
+                          : "border-gray-200 hover:border-gray-300"
+                        }`}
+                    >
+                      <div className="text-3xl mb-2">{item.icon}</div>
+                      <h3 className="font-bold">{item.title}</h3>
+                      <p className="text-sm text-gray-600">{item.desc}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+
+              {/* Interests */}
+              <div>
+                <div className="flex items-center gap-2 text-xl font-medium text-primary mb-6">
+                  <div className="p-3 bg-blue-50 rounded-full">
+                    <FaHeart className="text-xl text-primary" />
+                  </div>
+                  <span>Select your interests (optional)</span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  {SelectInterestOptions.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => toggleInterest(item.title)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-all flex flex-col items-center justify-center text-center ${selectedInterests.includes(item.title)
+                          ? "border-primary bg-primary/5"
+                          : "border-gray-200 hover:border-gray-300"
+                        }`}
+                    >
+                      <div className="text-2xl mb-1">{item.icon}</div>
+                      <h3 className="text-sm font-medium">{item.title}</h3>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        
+        )}
+
+        {/* Healthcare Options */}
+        {formData.tripType === 'healthcare' && (
+          <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Healthcare Preferences</h2>
+
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 text-xl font-medium text-primary mb-6">
+                <div className="p-3 bg-blue-50 rounded-full">
+                  <MdHealthAndSafety className="text-xl text-primary" />
+                </div>
+                <span>Select medical specialties of interest (optional)</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {SelectHealthcareSpecialties.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => toggleSpecialty(item.title)}
+                    className={`p-3 rounded-lg border cursor-pointer transition-all flex flex-col items-center justify-center text-center ${selectedSpecialties.includes(item.title)
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200 hover:border-gray-300"
+                      }`}
+                  >
+                    <div className="text-2xl mb-1">{item.icon}</div>
+                    <h3 className="text-sm font-medium">{item.title}</h3>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Education Options */}
+        {formData.tripType === 'education' && (
+          <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Educational Preferences</h2>
+
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 text-xl font-medium text-primary mb-6">
+                <div className="p-3 bg-blue-50 rounded-full">
+                  <MdSchool className="text-xl text-primary" />
+                </div>
+                <span>Select educational fields of interest (optional)</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {SelectEducationalFields.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => toggleEducationField(item.title)}
+                    className={`p-3 rounded-lg border cursor-pointer transition-all flex flex-col items-center justify-center text-center ${selectedEducationFields.includes(item.title)
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200 hover:border-gray-300"
+                      }`}
+                  >
+                    <div className="text-2xl mb-1">{item.icon}</div>
+                    <h3 className="text-sm font-medium">{item.title}</h3>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Generate Trip Button */}
-        <div className="flex flex-col gap-4 items-center my-10">
-          <Button 
-            disabled={loading || formProgress < 100} 
+        <div className="flex justify-center mt-12">
+          <Button
             onClick={OngenerateTrip}
-            className="py-6 px-8 text-lg rounded-full shadow-lg transition-all hover:shadow-xl hover:scale-105"
+            disabled={loading || formProgress < 100}
+            className="h-16 px-10 text-lg font-medium rounded-xl transition-all"
           >
             {loading ? (
-              <div className="flex items-center gap-2">
-                <AiOutlineLoading3Quarters className="animate-spin" />
-                <span>Creating Your Perfect Itinerary...</span>
-              </div>
+              <>
+                <AiOutlineLoading3Quarters className="mr-2 h-5 w-5 animate-spin" />
+                Generating Your Perfect Trip...
+              </>
             ) : (
-              <div className="flex items-center gap-2">
-                <span>Generate My Dream Trip</span>
-                <span className="text-2xl">🎉</span>
-              </div>
+              <>
+                {getTripTypeIcon()}
+                <span className="ml-2">Generate My {formData.tripType === 'tourism' ? 'Trip' : formData.tripType === 'healthcare' ? 'Medical Plan' : 'Educational Plan'}</span>
+              </>
             )}
           </Button>
-          
-          {formProgress < 100 && (
-            <p className="text-orange-500">Please complete all required fields to generate your trip</p>
-          )}
         </div>
       </div>
 
-      {/* Sign In Dialog */}
+      {/* Login Dialog */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center">Sign In to Save Your Trip</DialogTitle>
-            <DialogDescription className="text-center">
-              <div className="flex justify-center my-6">
-                <img src="/logo.svg" alt="Logo" className="h-16" />
-              </div>
-              <p className="text-lg mb-6">Sign in to keep all your dream trips saved and accessible</p>
-              <Button
-                onClick={login}
-                disabled={loading}
-                className="w-full py-6 flex gap-4 items-center justify-center text-lg transition-all hover:scale-105"
-              >
-                <FcGoogle className="text-2xl" /> 
-                <span>Continue with Google</span>
-              </Button>
-              <p className="mt-6 text-xs text-gray-500">We only use your Google account to save your trips</p>
+            <DialogTitle>Sign in required</DialogTitle>
+            <DialogDescription>
+              Please sign in with your Google account to generate and save your trip plan.
             </DialogDescription>
           </DialogHeader>
+          <div className="flex items-center justify-center py-6">
+            <Button
+              variant="outline"
+              onClick={() => login()}
+              className="flex items-center gap-2 py-6"
+            >
+              <FcGoogle className="h-5 w-5" />
+              <span>Continue with Google</span>
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

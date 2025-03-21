@@ -327,7 +327,7 @@ function InfoSection({ trip }) {
                         <h4 className="text-lg font-semibold text-black truncate">{hotel?.hotelName}</h4>
                         <p className="text-xs text-gray-500 flex items-center mb-3">
                           <FaMapMarkerAlt className="h-3 w-3 mr-1" />
-                          {hotel?.hotelAddress}
+                          {hotel?.HotelAddress || hotel?.hotelAddress}
                         </p>
 
                         <div className="flex items-center justify-between mb-3">
